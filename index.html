@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#38 Champion-Hert — Spa 2026 Race Analysis</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #22263a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.05);
+  --text: #e8eaf0;
+  --text2: #8b90a4;
+  --text3: #5c6178;
+  --blue: #4d9de0;
+  --red: #e24b4a;
+  --green: #5ab552;
+  --amber: #e8a838;
+  --purple: #9b72cf;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+.container { max-width: 100%; margin: 0; padding: 20px 24px; }
+
+/* Header */
+.header { margin-bottom: 24px; }
+.header-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.team-name { font-size: 22px; font-weight: 600; color: var(--text); }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.badge-ret { background: rgba(226,75,74,0.18); color: #f07070; border: 0.5px solid rgba(226,75,74,0.3); }
+.badge-sst { background: rgba(232,168,56,0.15); color: #e8a838; border: 0.5px solid rgba(232,168,56,0.25); }
+.badge-grid { background: rgba(77,157,224,0.15); color: #4d9de0; border: 0.5px solid rgba(77,157,224,0.25); }
+.header-sub { font-size: 13px; color: var(--text2); }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 10px; margin-bottom: 24px; }
+.kpi { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.kpi-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.kpi-val { font-size: 22px; font-weight: 600; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.kpi-red .kpi-val { color: var(--red); }
+.kpi-blue .kpi-val { color: var(--blue); }
+.kpi-green .kpi-val { color: var(--green); }
+.kpi-amber .kpi-val { color: var(--amber); }
+
+/* Tabs */
+.tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 0.5px solid var(--border); padding-bottom: 0; }
+.tab { padding: 8px 16px; font-size: 13px; border-radius: var(--radius-sm) var(--radius-sm) 0 0; border: 0.5px solid transparent; background: transparent; cursor: pointer; color: var(--text2); transition: all 0.15s; border-bottom: none; position: relative; bottom: -1px; }
+.tab:hover { color: var(--text); background: var(--bg3); }
+.tab.active { background: var(--bg3); color: var(--text); border-color: var(--border); border-bottom-color: var(--bg3); }
+
+/* Cards */
+.card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; }
+.card-title { font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; font-size: 12px; color: var(--text2); }
+.leg { display: flex; align-items: center; gap: 6px; }
+.leg-dot { width: 12px; height: 4px; border-radius: 2px; }
+.leg-box { width: 14px; height: 10px; border-radius: 2px; }
+.leg-toggle { cursor: pointer; user-select: none; padding: 3px 8px; border-radius: 20px; border: 0.5px solid transparent; transition: opacity 0.15s, border-color 0.15s; }
+.leg-toggle:hover { border-color: rgba(255,255,255,0.15); }
+.leg-toggle.active { opacity: 1; }
+.leg-toggle.hidden { opacity: 0.3; text-decoration: line-through; }
+
+/* Chart wrapper */
+.chart-wrap { position: relative; }
+
+/* Dual-range slider */
+.dslider { position: relative; height: 20px; width: 220px; display: inline-block; vertical-align: middle; }
+.ds-track { position: absolute; top: 50%; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; transform: translateY(-50%); }
+.ds-fill { position: absolute; top: 50%; height: 4px; background: #4d9de0; border-radius: 2px; transform: translateY(-50%); pointer-events: none; }
+.dslider input[type=range] { position: absolute; left: 0; top: 0; width: 100%; margin: 0; height: 20px; background: transparent; appearance: none; -webkit-appearance: none; pointer-events: none; }
+.dslider input[type=range]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #4d9de0; border: 2px solid #0f1117; cursor: pointer; pointer-events: all; box-shadow: 0 0 0 2px rgba(77,157,224,0.3); }
+.dslider input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #4d9de0; border: 2px solid #0f1117; cursor: pointer; pointer-events: all; }
+.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.filter-lbl { font-size: 11px; color: var(--text2); font-weight: 500; letter-spacing: .04em; }
+.rtog { display:inline-flex;align-items:center;padding:3px 9px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);font-size:.72rem;cursor:pointer;color:var(--text2);user-select:none;transition:background .12s,color .12s; }
+.rtog.on { background:#1b2c48;border-color:#2d5fa0;color:#7fb8f8; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 1.5px; background: var(--border); }
+.tl-item { position: relative; padding: 10px 0 10px 8px; border-bottom: 0.5px solid var(--border2); }
+.tl-item:last-child { border-bottom: none; }
+.tl-dot { position: absolute; left: -22px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg2); }
+.tl-time { font-size: 11px; color: var(--text3); margin-bottom: 2px; }
+.tl-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.tl-detail { font-size: 12px; color: var(--text2); }
+.tl-ret .tl-dot { background: var(--red); }
+.tl-ret .tl-title { color: #f07070; }
+.tl-warn .tl-dot { background: var(--amber); }
+.tl-pit .tl-dot { background: var(--blue); }
+.tl-normal .tl-dot { background: var(--green); }
+.tl-fcy .tl-dot { background: var(--purple); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { font-size: 11px; font-weight: 500; color: var(--text2); text-align: left; padding: 7px 10px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.03em; }
+td { padding: 8px 10px; border-bottom: 0.5px solid var(--border2); }
+tr:last-child td { border-bottom: none; }
+.row-highlight td { background: rgba(77,157,224,0.08); }
+.row-highlight td:first-child { font-weight: 500; }
+
+/* Rider cards */
+.rider-card { background: var(--bg3); border-radius: var(--radius); padding: 14px 16px; border-top: 3px solid; }
+.rider-name { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.rider-stat { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.rider-stat span { color: var(--text); font-weight: 500; }
+
+/* Alert box */
+.alert { border-radius: var(--radius-sm); padding: 12px 16px; border-left: 3px solid; margin-top: 12px; }
+.alert-red { background: rgba(226,75,74,0.1); border-color: var(--red); }
+.alert-amber { background: rgba(232,168,56,0.1); border-color: var(--amber); }
+.alert-blue { background: rgba(77,157,224,0.1); border-color: var(--blue); }
+.alert-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.alert-red .alert-title { color: #f07070; }
+.alert-amber .alert-title { color: var(--amber); }
+.alert-blue .alert-title { color: var(--blue); }
+.alert-body { font-size: 12px; color: var(--text2); }
+
+/* Pill */
+.pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.pill-green { background: rgba(90,181,82,0.15); color: #7dd87a; }
+.pill-red { background: rgba(226,75,74,0.15); color: #f07070; }
+.pill-amber { background: rgba(232,168,56,0.15); color: var(--amber); }
+
+/* Bar compare */
+.bar-row { display: grid; grid-template-columns: 180px 1fr 60px; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 0.5px solid var(--border2); }
+.bar-row:last-child { border-bottom: none; }
+.bar-track { background: rgba(255,255,255,0.05); border-radius: 3px; height: 8px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; }
+.bar-label { font-size: 12px; color: var(--text2); }
+.bar-val { font-size: 12px; text-align: right; }
+
+/* Projected box */
+.proj-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.proj-item { background: var(--bg3); border-radius: var(--radius-sm); padding: 14px; }
+.proj-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+.proj-val { font-size: 20px; font-weight: 600; color: var(--blue); }
+.proj-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* Champ gap */
+.gap-indicator { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--border2); }
+.gap-rank { font-size: 13px; font-weight: 600; width: 24px; color: var(--text2); }
+.gap-team { font-size: 13px; flex: 1; }
+.gap-bar-wrap { width: 200px; }
+.gap-pts { font-size: 13px; font-weight: 600; text-align: right; width: 50px; }
+.gap-diff { font-size: 11px; color: var(--text3); width: 60px; text-align: right; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <span class="team-name">#38 Champion-Hert Powered by MRP</span>
+      <span class="badge badge-ret">&#x25A0; Retired — Lap 100</span>
+      <span class="badge badge-sst">SST</span>
+      <span class="badge badge-grid">Grid P14</span>
+    </div>
+    <div class="header-sub">KOVÁCS Bálint &nbsp;/&nbsp; BÜHN Jan &nbsp;/&nbsp; CRESSON Loris &nbsp;&nbsp;|&nbsp;&nbsp; BMW M1000RR &nbsp;&nbsp;|&nbsp;&nbsp; 8 Hours of SPA — 04–06 June 2026 &nbsp;&nbsp;|&nbsp;&nbsp; Circuit de Spa-Francorchamps (6.985 km)</div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi kpi-red">
+      <div class="kpi-label">Race result</div>
+      <div class="kpi-val">DNF</div>
+      <div class="kpi-sub">P43 overall / P18 SST</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Laps completed</div>
+      <div class="kpi-val">100</div>
+      <div class="kpi-sub">52.1% of 192 total</div>
+    </div>
+    <div class="kpi kpi-blue">
+      <div class="kpi-label">Best lap</div>
+      <div class="kpi-val" style="font-size:18px">2:22.933</div>
+      <div class="kpi-sub">Kovács — Lap 16</div>
+    </div>
+    <div class="kpi kpi-blue">
+      <div class="kpi-label">Qualifying</div>
+      <div class="kpi-val" style="font-size:18px">P14</div>
+      <div class="kpi-sub">2:22.686 SST</div>
+    </div>
+    <div class="kpi kpi-green">
+      <div class="kpi-label">Clean race pace</div>
+      <div class="kpi-val" style="font-size:18px">2:23.3</div>
+      <div class="kpi-sub">Avg excluding FCY/out-laps</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Normal pit avg</div>
+      <div class="kpi-val" style="font-size:18px">47.2s</div>
+      <div class="kpi-sub">Stops 1–3 (excl. long stops)</div>
+    </div>
+    <div class="kpi kpi-amber">
+      <div class="kpi-label">Champ lead after Spa</div>
+      <div class="kpi-val">+6 pts</div>
+      <div class="kpi-sub">vs Revo-M2 (was +37)</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('pace')">Lap Pace</button>
+    <button class="tab" onclick="showTab('position')">Race Position</button>
+    <button class="tab" onclick="showTab('gap')">Gap to #38</button>
+    <button class="tab" onclick="showTab('rider')">Rider Analysis</button>
+    <button class="tab" onclick="showTab('pits')">Pit Stops</button>
+    <button class="tab" onclick="showTab('champ')">Championship</button>
+  </div>
+
+  <!-- TAB: PACE -->
+  <div id="tab-pace">
+    <div class="card">
+      <div class="card-title">Lap times by rider — Laps 1–100</div>
+      <div class="legend" id="paceLegend">
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="6"><div class="leg-dot" style="background:#ffffff;height:3px"></div>Kovács Bálint (#38)</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="7"><div class="leg-dot" style="background:#e24b4a;height:3px"></div>BÜHN Jan (#38)</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="8"><div class="leg-dot" style="background:#5ab552;height:3px"></div>CRESSON Loris (#38)</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="0"><div class="leg-dot" style="background:#9B59B6;height:2px;opacity:0.7"></div>#49 Revo-M2</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="1"><div class="leg-dot" style="background:#4F6CBF;height:2px;opacity:0.7"></div>#77 Wójcik</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="2"><div class="leg-dot" style="background:#E8503A;height:2px;opacity:0.7"></div>#18 Team 18</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="3"><div class="leg-dot" style="background:#F5A623;height:2px;opacity:0.7"></div>#25 Étoile</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="4"><div class="leg-dot" style="background:#92C020;height:2px;opacity:0.7"></div>#9 TECMAS</div>
+        <div class="leg leg-toggle active" data-chart="pace" data-idx="5"><div class="leg-dot" style="background:#22D3EE;height:2px;opacity:0.7"></div>#27 TRT27</div>
+        <div class="leg"><div class="leg-box" style="background:rgba(155,114,207,0.15);border:0.5px solid rgba(155,114,207,0.4)"></div>FCY / Safety Car</div>
+        <div class="leg"><div class="leg-dot" style="background:rgba(255,255,255,0.25);width:2px;height:14px"></div>Pit stop</div>
+      </div>
+      <div class="filter-bar">
+        <span class="filter-lbl">RACE TIME</span>
+        <span id="paceHLbl" style="font-size:11px;color:var(--text2);min-width:64px">0h – 8h</span>
+        <div class="dslider">
+          <div class="ds-track"></div>
+          <div class="ds-fill" id="paceHFill"></div>
+          <input type="range" id="paceHMin" min="0" max="8" value="0" step="0.25" oninput="updatePaceFilter()">
+          <input type="range" id="paceHMax" min="0" max="8" value="8" step="0.25" oninput="updatePaceFilter()">
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:800px">
+        <canvas id="paceChart"></canvas>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Out-laps and pit-in laps excluded. Vertical dashed lines = pit stops. Red line = retirement. FCY band laps 80–95.</div>
+    </div>
+  </div>
+
+  <!-- TAB: RACE POSITION -->
+  <div id="tab-position" style="display:none">
+    <div class="card">
+      <div class="card-title">SST class position by lap — #38 vs SST rivals (Laps 1–192)</div>
+      <div class="legend">
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="0"><div class="leg-dot" style="background:#ffffff;height:3px"></div>#38 Champion-Hert</div>
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="1"><div class="leg-dot" style="background:#9B59B6;height:2px;opacity:0.8"></div>#49 Revo-M2</div>
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="2"><div class="leg-dot" style="background:#4F6CBF;height:2px;opacity:0.8"></div>#77 Wójcik</div>
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="3"><div class="leg-dot" style="background:#E8503A;height:2px;opacity:0.8"></div>#18 Team 18</div>
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="4"><div class="leg-dot" style="background:#F5A623;height:2px;opacity:0.8"></div>#25 Étoile</div>
+        <div class="leg leg-toggle active" data-chart="pos" data-idx="5"><div class="leg-dot" style="background:#92C020;height:2px;opacity:0.8"></div>#9 TECMAS</div>
+        <div class="leg" style="opacity:0.4;font-style:italic;font-size:11px">#27 TRT27 excluded (EWC class)</div>
+      </div>
+      <div class="chart-wrap" style="height:570px">
+        <canvas id="posChart"></canvas>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Lower = better. Y-axis inverted so P1 is at top. Gaps in lines = pit stop laps. #38 peaked at P7 overall before retirement.</div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Peak overall position (best lap)</div>
+        <div id="peakPosTable"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Position at #38 retirement (Lap 100)</div>
+        <div id="posAtRet"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: GAP TO #38 -->
+  <div id="tab-gap" style="display:none">
+    <div class="card">
+      <div class="card-title">Cumulative time gap to #38 — SST rivals (Laps 1–95)</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Positive = rival is <strong style="color:#5ab552">behind</strong> #38. Negative = rival is <strong style="color:#e24b4a">ahead</strong> of #38. Gaps include time lost/gained in pit stops.</div>
+      <div class="legend">
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="0"><div class="leg-dot" style="background:#9B59B6;height:2px"></div>#49 Revo-M2 (SST P1)</div>
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="1"><div class="leg-dot" style="background:#4F6CBF;height:2px"></div>#77 Wójcik (SST P2)</div>
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="2"><div class="leg-dot" style="background:#E8503A;height:2px"></div>#18 Team 18 (SST P3)</div>
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="3"><div class="leg-dot" style="background:#F5A623;height:2px"></div>#25 Étoile (SST P4)</div>
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="4"><div class="leg-dot" style="background:#92C020;height:2px"></div>#9 TECMAS (SST P5)</div>
+        <div class="leg leg-toggle active" data-chart="gap" data-idx="5"><div class="leg-dot" style="background:#22D3EE;height:2px"></div>#27 TRT27 (Champ P3)</div>
+      </div>
+      <div class="chart-wrap" style="height:570px">
+        <canvas id="gapChart"></canvas>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">#38 reference line ends at Lap 95 (last clean data before catastrophic stop). Rivals continue to race end — gap values after Lap 98 reflect #38's cumulative loss from the 55:52 pit. FCY periods visible as compression bands.</div>
+    </div>
+  </div>
+
+  <!-- TAB: RIDER ANALYSIS -->
+  <div id="tab-rider" style="display:none">
+    <div class="card">
+      <div class="card-title">Rider Lap Analysis — Stint-by-stint pace</div>
+      <div id="rcCtrl" style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <span class="filter-lbl">SHOW</span>
+        <span class="rtog on" id="rc_dots"  onclick="rcToggle('dots')">Dots</span>
+        <span class="rtog on" id="rc_bands" onclick="rcToggle('bands')">Bands</span>
+        <span class="rtog on" id="rc_pace"  onclick="rcToggle('pace')">Pace line</span>
+        <span class="rtog on" id="rc_fast"  onclick="rcToggle('fast')">Best line</span>
+        <span class="filter-lbl" style="margin-left:8px">OUTER BAND</span>
+        <span id="rcB1Lbl" style="min-width:28px;font-size:11px;color:var(--text2)">90%</span>
+        <input type="range" id="rcB1" min="10" max="100" value="90" step="5" style="width:80px;vertical-align:middle;accent-color:#4d9de0" oninput="rcBand1Pct=+this.value;document.getElementById('rcB1Lbl').textContent=this.value+'%';draw_rc()">
+        <span class="filter-lbl" style="margin-left:8px">INNER BAND</span>
+        <span id="rcB2Lbl" style="min-width:28px;font-size:11px;color:var(--text2)">50%</span>
+        <input type="range" id="rcB2" min="10" max="100" value="50" step="5" style="width:80px;vertical-align:middle;accent-color:#4d9de0" oninput="rcBand2Pct=+this.value;document.getElementById('rcB2Lbl').textContent=this.value+'%';draw_rc()">
+        <span class="filter-lbl" style="margin-left:8px">ORDER</span>
+        <span class="rtog on" id="rc_ord_chrono" onclick="rcSetOrder('chrono')">Chronological</span>
+        <span class="rtog"    id="rc_ord_rider"  onclick="rcSetOrder('rider')">By rider</span>
+        <span class="rtog"    id="rc_ord_pace"   onclick="rcSetOrder('pace')">Fastest first</span>
+        <span class="rtog"    id="rc_ord_band"   onclick="rcSetOrder('band')">Smallest range</span>
+        <span class="filter-lbl" style="margin-left:8px">RACE TIME</span>
+        <span id="rcHLbl" style="min-width:60px;font-size:11px;color:var(--text2)">0h–8h</span>
+        <div class="dslider">
+          <div class="ds-track"></div>
+          <div class="ds-fill" id="rcHFill"></div>
+          <input type="range" id="rcHMinR" min="0" max="8" value="0" step="0.25" oninput="rcUpdateTime()">
+          <input type="range" id="rcHMaxR" min="0" max="8" value="8" step="0.25" oninput="rcUpdateTime()">
+        </div>
+      </div>
+      <div style="overflow:visible"><canvas id="rcChart" style="display:block;width:100%"></canvas></div>
+    </div>
+    <div id="riderCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px"></div>
+  </div>
+
+  <!-- TAB: STINTS -->
+
+  <!-- TAB: PITS -->
+  <div id="tab-pits" style="display:none">
+    <div class="card">
+      <div class="card-title">Pit stop durations — per team</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">#38 durations are exact. All other teams marked ~ are estimated from timing data. Retirement stop excluded.</div>
+      <div id="pitToggles" style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <span class="filter-lbl">SHOW</span>
+        <span class="rtog on" id="pt_38"  onclick="pitToggle(38)"  style="border-color:#aaa">&#35;38 Champion-Hert</span>
+        <span class="rtog on" id="pt_77"  onclick="pitToggle(77)"  style="border-color:#3a4f8a">&#35;77 Wójcik Racing</span>
+        <span class="rtog on" id="pt_25"  onclick="pitToggle(25)"  style="border-color:#8a6010">&#35;25 Team Étoile</span>
+        <span class="rtog on" id="pt_49"  onclick="pitToggle(49)"  style="border-color:#6a3a8a">&#35;49 Revo-M2</span>
+        <span class="rtog on" id="pt_18"  onclick="pitToggle(18)"  style="border-color:#8a2a20">&#35;18 Team 18</span>
+        <span class="rtog on" id="pt_9"   onclick="pitToggle(9)"   style="border-color:#5a7010">&#35;9 TECMAS MFP</span>
+      </div>
+      <div class="chart-wrap" style="height:400px">
+        <canvas id="pitChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pit stop log — all SST teams</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th><th>Team</th><th>Lap</th><th>Duration</th><th>Note</th>
+          </tr>
+        </thead>
+        <tbody id="pitTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB: SST -->
+
+  <!-- TAB: CHAMPIONSHIP -->
+  <div id="tab-champ" style="display:none">
+    <div class="card">
+      <div class="card-title">2026 SST Endurance World Cup — Standings after Round 2 (Spa)</div>
+      <table>
+        <thead>
+          <tr><th>Rank</th><th>Team</th><th>Mfr</th><th style="text-align:right">Total</th><th style="text-align:right">R1 Le Mans</th><th style="text-align:right">R2 Spa</th><th style="text-align:right">R3 Suzuka</th><th style="text-align:right">R4 Bol d'Or</th></tr>
+        </thead>
+        <tbody>
+          <tr class="row-highlight">
+            <td>1 <span class="pill pill-green">LEADS</span></td>
+            <td><strong>Champion-Hert MRP (#38)</strong><br><span style="font-size:11px;color:#4d9de0">Kovács / Bühn / Cresson</span></td>
+            <td>BMW</td>
+            <td style="text-align:right;font-weight:700">65</td>
+            <td style="text-align:right">62</td>
+            <td style="text-align:right"><span class="pill pill-red">3</span></td>
+            <td style="text-align:right;color:var(--text3)">—</td>
+            <td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>2</td><td>Revo-M2 Racing Team</td><td>Aprilia</td>
+            <td style="text-align:right;font-weight:700">59</td><td style="text-align:right">25</td><td style="text-align:right;color:#5ab552"><strong>34</strong></td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,0.02)">
+            <td>3</td><td>TRT27 AZ moto</td><td>Honda</td>
+            <td style="text-align:right;font-weight:700">57</td><td style="text-align:right">39</td><td style="text-align:right">18</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>4</td><td>Dafy-Kaedear-RAC41</td><td>Honda</td>
+            <td style="text-align:right;font-weight:700">49</td><td style="text-align:right">39</td><td style="text-align:right">10</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,0.02)">
+            <td>5</td><td>Honda No Limits</td><td>Honda</td>
+            <td style="text-align:right;font-weight:700">47</td><td style="text-align:right">47</td><td style="text-align:right;color:var(--text3)">DNS</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>6</td><td>TEAM TECMAS - MINERVA OIL</td><td>BMW</td>
+            <td style="text-align:right;font-weight:700">47</td><td style="text-align:right">28</td><td style="text-align:right">19</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,0.02)">
+            <td>7</td><td>Wójcik Racing Team #77</td><td>Honda</td>
+            <td style="text-align:right;font-weight:700">44</td><td style="text-align:right">20</td><td style="text-align:right">24</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>8</td><td>TEAM 18 POMPIERS IGOL</td><td>Yamaha</td>
+            <td style="text-align:right;font-weight:700">40</td><td style="text-align:right">19</td><td style="text-align:right">21</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,0.02)">
+            <td>9</td><td>Team Étoile</td><td>BMW</td>
+            <td style="text-align:right;font-weight:700">33</td><td style="text-align:right">13</td><td style="text-align:right">20</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>10</td><td>Junior Team LMS Suzuki</td><td>Suzuki</td>
+            <td style="text-align:right;font-weight:700">32</td><td style="text-align:right">21</td><td style="text-align:right">11</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr style="background:rgba(255,255,255,0.02)">
+            <td>11</td><td>TEAM RACING 85 by A2M2</td><td>Kawasaki</td>
+            <td style="text-align:right;font-weight:700">29</td><td style="text-align:right">17</td><td style="text-align:right">12</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+          <tr>
+            <td>12</td><td>Slider Endurance</td><td>Honda</td>
+            <td style="text-align:right;font-weight:700">18</td><td style="text-align:right">3</td><td style="text-align:right">15</td>
+            <td style="text-align:right;color:var(--text3)">—</td><td style="text-align:right;color:var(--text3)">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Championship points trend</div>
+      <div id="champToggles" style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <span class="filter-lbl">SHOW</span>
+        <span class="rtog on" id="ct_38"  onclick="champToggle(0)"  style="border-color:#aaa">&#35;38 Champion-Hert</span>
+        <span class="rtog on" id="ct_49"  onclick="champToggle(1)"  style="border-color:#6a3a8a">&#35;49 Revo-M2</span>
+        <span class="rtog on" id="ct_77"  onclick="champToggle(2)"  style="border-color:#3a4f8a">&#35;77 Wójcik Racing</span>
+        <span class="rtog on" id="ct_18"  onclick="champToggle(3)"  style="border-color:#8a2a20">&#35;18 Team 18</span>
+        <span class="rtog on" id="ct_25"  onclick="champToggle(4)"  style="border-color:#8a6010">&#35;25 Team Étoile</span>
+        <span class="rtog on" id="ct_9"   onclick="champToggle(5)"  style="border-color:#5a7010">&#35;9 TECMAS MFP</span>
+      </div>
+      <div class="chart-wrap" style="height:420px">
+        <canvas id="champChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+Chart.defaults.color = '#8b90a4';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+
+const ALL_TABS = ['pace','position','gap','rider','pits','champ'];
+function showTab(id) {
+  ALL_TABS.forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===id ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((b,i) => {
+    b.classList.toggle('active', ALL_TABS[i]===id);
+  });
+  if (id==='position' && !window._pos) buildPosition();
+  if (id==='gap' && !window._gap) buildGap();
+  if (id==='rider' && !window._rider) buildRider();
+  if (id==='pits' && !window._pits) buildPits();
+  if (id==='champ' && !window._champ) buildChamp();
+}
+
+const kov = {2:144.371,3:143.248,4:143.019,5:143.308,6:143.570,7:143.660,8:143.963,9:143.826,10:143.971,11:143.409,12:143.882,13:144.175,14:143.793,15:143.442,16:142.933,17:142.981,18:143.547,60:145.226,61:143.774,62:144.439,63:143.875,64:144.815,65:143.762,66:145.062,67:145.376,68:144.460,69:146.685,70:144.684,71:144.808,72:143.589,73:143.758,74:144.058,75:144.286,76:143.887,77:144.856,78:148.151};
+const cres = {21:144.305,22:144.894,23:145.786,24:144.598,25:143.986,26:144.383,27:144.703,28:145.030,29:144.449,30:144.747,31:145.225,32:145.044,33:144.271,34:144.415,35:144.579,36:147.345,81:167.716,82:166.737,83:163.426,84:163.277,85:162.758,86:160.995,87:159.981,88:159.813,89:163.180,90:159.831,91:158.545,92:157.891,93:157.425,94:157.325};
+const buhn = {39:145.210,40:145.664,41:143.872,42:143.975,43:143.107,44:143.965,45:146.644,46:150.982,47:144.567,48:144.262,49:145.393,50:146.053,51:144.709,52:143.480,53:143.394,54:143.162,55:145.445,56:144.388,57:143.326,97:149.749};
+
+// Raw SST rival lap data — values >200s are out/pit laps, filtered to null
+const sst49r = {1:150.464,2:141.895,3:142.14,4:142.264,5:142.046,6:142.393,7:142.552,8:142.566,9:142.325,10:142.628,11:142.838,12:142.216,13:142.605,14:143.26,15:143.045,16:142.833,19:145.396,20:145.912,21:146.235,22:144.611,23:144.894,24:145.595,25:144.625,26:144.654,27:145.271,28:144.762,29:144.549,30:145.218,31:145.526,32:145.625,33:145.001,34:144.376,35:143.787,38:142.715,39:143.48,40:143.431,41:143.186,42:143.156,43:143.047,44:144.246,45:145.225,46:154.452,47:144.301,48:142.423,49:145.343,50:144.019,51:142.958,52:142.426,53:142.673,54:142.191,57:148.296,58:146.335,59:146.308,60:146.141,61:146.136,62:146.218,63:147.117,64:146.967,65:146.038,66:146.259,67:145.808,68:144.767,69:146.067,70:144.658,71:144.982,72:144.823,73:145.231,76:144.763,77:144.992,80:167.088,81:167.61,82:167.298,83:166.173,84:164.564,85:163.869,86:161.174,87:159.81,88:162.15,89:162.08,90:160.276,91:157.486,92:159.581,93:158.58,96:145.493,97:144.291,98:143.553,99:146.144,100:152.378};
+const sst77r = {1:154.085,2:144.039,3:144.052,4:143.585,5:143.076,6:143.107,7:143.704,8:143.812,9:143.352,10:143.807,11:144.131,12:143.765,13:144.208,14:143.18,15:143.401,16:143.9,17:143.865,18:144.73,21:145.336,22:144.817,23:144.108,24:145.212,25:145.716,26:144.557,27:145.013,28:144.984,29:145.422,30:145.214,31:146.339,32:144.442,33:144.085,34:143.676,35:143.675,36:143.251,37:142.662,38:142.423,41:146.393,42:145.334,43:145.806,44:145.295,45:150.001,46:160.131,47:148.504,48:145.93,49:147.029,50:147.485,51:146.694,52:145.523,53:145.291,54:145.62,55:145.304,56:144.952,57:145.466,58:145.216,61:146.281,62:145.239,63:144.405,64:144.061,65:144.563,66:144.396,67:143.925,68:143.968,69:144.197,70:143.018,71:143.341,72:143.144,73:143.216,74:142.812,75:143.236,76:143.366,77:144.318,80:166.618,81:166.903,82:167.329,83:165.089,84:164.196,85:162.979,86:161.073,87:161.137,88:162.456,89:162.661,90:161.121,91:158.526,92:158.054,93:158.547,94:160.35,95:158.048,98:148.291,99:153.878,100:157.824};
+const sst18r = {1:153.849,2:143.195,3:143.417,4:143.809,5:144.035,6:144.088,7:143.454,8:143.85,9:143.651,10:143.993,11:143.779,12:144.676,13:143.526,14:143.258,15:143.495,16:143.307,17:143.806,18:144.123,21:145.609,22:146.076,23:145.621,24:147.541,25:146.22,26:146.582,27:146.946,28:146.883,29:147.146,30:147.518,31:148.346,32:145.77,33:144.964,34:145.298,35:145.092,36:145.384,37:147.377,38:146.451,39:145.636,42:146.853,43:145.986,44:144.973,45:146.479,46:146.493,47:145.591,48:146.732,49:145.982,50:146.494,51:145.48,52:146.552,53:144.587,54:145.477,55:145.336,56:145.696,57:144.988,58:145.588,59:145.834,60:145.682,63:145.894,64:143.721,65:143.819,66:144.765,67:143.65,68:143.895,69:144.679,70:142.995,71:142.87,72:143.279,73:143.885,74:144.629,75:144.136,76:143.997,77:145.116,80:166.913,81:166.918,82:165.582,83:164.307,84:162.805,85:162.541,86:161.019,87:195.542,88:170.358,89:165.828,90:162.947,91:161.073,92:162.321,95:147.119,96:147.27,97:145.526,98:146.562,99:161.35,100:166.026};
+const sst25r = {1:154.45,2:143.859,3:142.698,4:142.888,5:141.852,6:142.697,8:143.68,9:143.533,10:144.136,11:144.588,12:144.838,15:146.384,16:145.173,17:144.631,18:145.441,19:144.787,20:144.448,21:144.365,22:148.274,23:145.207,24:144.692,25:144.259,26:147.059,27:146.976,28:148.023,29:148.384,30:146.101,31:146.324,32:146.067,33:145.923,34:145.942,37:144.305,38:144.117,39:144.529,40:144.816,41:144.342,42:144.284,43:143.864,44:149.405,45:147.533,46:147.547,47:144.801,48:146.747,49:146.061,50:143.855,51:143.783,52:143.405,53:143.229,54:144.192,55:144.81,56:144.098,59:146.046,60:145.364,61:146.712,62:144.892,63:144.527,64:144.443,65:144.89,66:144.793,67:146.16,68:148.23,69:146.381,70:145.668,71:145.177,72:145.135,73:145.867,74:145.434,75:144.95,76:151.956,79:173.931,80:170.241,81:167.386,82:168.013,83:166.848,84:163.288,85:164.223,86:166.736,87:166.086,88:163.446,89:162.974,90:163.046,91:159.552,94:152.221,95:148.475,96:148.066,97:152.592,98:162.449,99:164.351,100:154.163};
+const sst9r  = {1:153.11,2:143.182,3:142.75,4:142.396,5:142.318,6:143.373,7:142.904,8:142.667,9:143.168,10:143.348,11:142.959,12:143.342,13:142.893,14:142.368,15:142.404,16:142.599,17:142.635,21:149.56,22:147.282,23:146.554,24:146.355,25:147.8,26:147.146,27:149.442,28:147.826,29:147.036,30:147.204,31:148.162,32:146.335,33:147.262,34:146.596,35:146.248,36:146.507,37:146.675,38:147.244,41:145.915,42:145.748,43:144.691,44:146.539,45:150.154,46:145.484,47:144.247,48:145.409,49:145.915,50:144.876,51:144.745,52:144.487,53:144.145,54:144.339,55:144.667,56:144.782,57:145.189,58:144.85,59:144.617,62:144.255,63:144.593,64:144.184,65:143.781,66:143.009,67:143.26,68:144.643,69:144.433,70:143.819,71:143.271,72:142.884,73:143.228,74:143.267,75:143.151,76:143.455,77:144.003,80:173.708,81:169.48,82:167.279,83:166.614,84:164.677,85:164.197,86:161.959,87:166.582,88:164.246,89:160.038,90:158.004,91:158.622,94:152.43,95:149.853,96:149.634,97:147.693,98:157.2,99:168.46,100:158.373};
+const sst27r = {1:152.23,2:143.039,3:143.564,4:143.754,5:143.011,6:143.133,7:143.019,8:143.201,9:142.821,10:142.914,11:142.903,12:143.303,13:143.386,14:143.218,15:142.963,16:143.178,17:142.881,18:144.174,21:146.316,22:145.938,23:146.467,24:145.758,25:146.247,26:145.705,27:145.654,28:146.278,29:145.262,30:145.521,31:145.528,32:145.735,33:144.667,34:144.953,35:145.069,36:144.864,37:145.057,38:145.52,41:144.358,42:143.806,43:144.437,44:143.389,45:146.002,46:150.366,47:145.231,48:145.071,49:144.919,50:146.08,51:146.034,52:144.682,53:144.203,54:144.877,55:144.71,56:145.264,57:144.959,58:144.851,59:144.298,62:144.143,63:144.03,64:144.056,65:144.076,66:143.366,67:143.418,68:144.626,69:143.682,70:143.713,71:143.093,72:143.859,73:144.047,74:142.958,75:143.644,76:145.142,79:161.404,80:160.812,81:161.774,82:161.577,83:160.696,84:158.163,85:158.027,86:155.988,87:160.588,88:162.875,89:157.032,90:154.324,91:154.903,92:152.968,93:152.633,94:152.424,97:146.541,98:147.397,99:163.993,100:166.336};
+
+// Extend SST rival lap times to full race
+Object.assign(sst49r,{101:153.967,102:145.499,103:143.547,104:142.984,105:144.144,106:147.339,107:151.158,108:146.686,109:143.031,110:143.506,111:142.996,112:144.312,115:146.754,116:162.538,119:165.074,120:167.246,121:164.803,122:165.97,123:166.341,124:161.486,125:159.843,126:158.825,127:159.044,128:159.185,129:163.181,130:160.372,131:163.334,132:164.566,133:162.225,134:158.329,135:158.72,136:158.704,137:159.764,138:169.735,141:163.471,142:161.596,143:162.149,144:163.05,145:163.393,146:161.686,147:163.475,148:162.691,149:161.402,150:162.512,151:161.751,152:160.961,153:160.488,154:160.772,155:159.921,156:160.722,157:158.929,158:159.35,159:158.85,160:159.752,163:151.404,164:150.487,165:148.367,166:149.268,167:150.473,168:147.76,169:149.558,170:146.132,171:147.248,172:145.968,173:146.253,174:145.621,175:146.73,176:146.538,179:150.705,180:149.909,181:149.577,182:150.328,183:150.424,184:151.021,185:151.22,186:154.462});
+Object.assign(sst77r,{101:154.385,102:147.211,103:145.815,104:144.397,105:146.495,106:158.661,107:151.711,108:146.244,109:145.866,110:144.887,111:145.123,112:144.642,113:144.547,114:143.498,115:150.911,118:164.844,119:165.164,120:167.244,121:166.667,122:166.098,123:164.57,124:162.366,125:161.381,126:161.43,127:159.884,128:163.137,129:165.512,130:165.531,131:167.459,132:165.76,133:161.994,134:161.666,135:160.113,136:158.847,139:169.327,140:167.974,141:165.57,142:166.143,143:164.972,144:165.937,145:167.036,146:166.064,147:165.075,148:164.564,149:163.853,150:162.574,151:162.078,152:163.97,153:163.4,154:161.153,155:159.924,156:159.3,157:161.631,158:159.708,161:162.021,162:153.591,163:151.01,164:148.43,165:150.61,166:151.461,167:147.925,168:152.761,169:148.343,170:146.554,171:146.033,172:145.651,173:145.511,174:145.429,175:144.515,176:144.304,177:145.827,180:149.767,181:147.027,182:145.75,183:145.644,184:144.707,185:144.069,186:144.224});
+Object.assign(sst18r,{101:151.315,102:147.613,103:146.62,104:146.68,105:152.534,106:153.691,107:148.739,108:144.787,109:144.597,110:144.608,111:145.72,112:144.156,113:145.87,117:166.099,118:166.864,119:166.417,120:165.063,121:165.835,122:166.12,123:162.734,124:160.229,125:158.663,126:158.39,127:157.933,128:162.364,129:161.405,130:164.478,131:164.958,132:160.73,133:158.495,134:157.587,135:157.616,138:172.002,139:169.003,140:166.649,141:165.102,142:163.768,143:163.492,144:165.605,145:164.228,146:164.067,147:163.914,148:162.873,149:161.468,150:162.398,151:161.529,152:162.24,153:161.73,154:161.054,155:159.23,156:159.292,157:158.589,160:157.852,161:156.182,162:152.087,163:150.59,164:149.144,165:161.877,166:149.733,167:150.82,168:152.53,169:148.704,170:147.895,171:146.818,172:146.366,173:144.594,174:145.593,175:145.259,176:145.926,177:145.911,178:146.321,181:150.259,182:148.852,183:148.65,184:147.697,185:148.82});
+Object.assign(sst25r,{101:151.535,102:149.806,103:147.932,106:147.418,107:146.751,108:146.142,109:146.245,110:146.171,111:144.825,112:145.524,113:147.59,116:165.956,117:167.133,118:165.523,119:165.936,120:166.64,121:164.552,122:162.115,123:160.673,124:160.487,125:160.053,126:162.596,127:165.381,128:164.075,129:166.465,130:166.978,131:166.09,132:161.551,133:161.451,134:160.609,135:164.96,136:170.953,137:175.215,140:166.872,141:164.538,142:166.334,143:168.185,144:166.266,145:165.333,146:164.921,147:163.702,148:167.347,149:165.248,150:166.594,151:166.352,152:173.511,153:165.019,154:163.314,155:165.53,156:162.131,157:161.908,158:163.676,159:162.809,160:159.431,163:159.805,164:154.973,165:153.256,166:151.291,167:151.851,168:151.469,169:153.078,170:149.95,171:149.907,172:147.652,173:147.141,174:147.467,175:147.567,176:148.37,177:148.669,178:149.595,179:148.291,182:149.752,183:150.082});
+Object.assign(sst9r, {101:150.338,102:146.638,103:152.562,104:147.928,107:144.924,108:144.337,109:143.873,110:144.884,111:144.296,112:144.999,113:144.309,116:163.587,117:165.197,118:163.901,119:162.758,120:164.651,121:164.521,122:162.812,123:161.589,124:160.467,125:161.335,126:157.71,127:160.647,128:161.081,129:162.219,130:163.014,131:165.861,132:162.328,133:161.37,134:160.929,135:160.323,138:169.11,139:168.391,140:165.716,141:162.218,142:161.752,143:161.708,144:162.959,145:162.956,146:164.771,147:161.18,148:160.868,149:162.735,152:162.724,153:161.283,154:158.12,155:157.379,156:157.916,157:156.172,158:156.523,161:153.256,162:151.744,163:147.605,164:145.738,165:145.46,166:144.602,167:149.406,168:146.514,169:147.496,170:145.872,171:144.299,172:144.485,173:142.806,174:143.654,177:146.891,178:145.553,179:143.902,180:143.864,181:143.555});
+Object.assign(sst27r,{101:151.279,102:145.799,103:144.564,104:144.766,105:154.637,106:158.059,107:151.531,108:145.018,109:144.287,110:143.876,111:144.496,112:144.38,113:145.245,114:144.88,117:162.087,118:161.142,119:160.178,120:160.37,121:159.983,122:162.629,123:161.295,124:159.129,125:155.069,126:153.276,127:154.473,128:159.574,129:161.858,130:162.92,131:164.672,132:162.556,133:159.961,134:156.268,135:155.79,136:155.047,139:164.769,140:163.215,141:163.338,142:163.568,143:162.393,144:162.137,145:163.624,146:163.028,147:161.316,148:160.786,149:160.548,150:160.205,151:161.474,154:160.328,155:155.206,156:151.717,157:150.417,158:149.904,159:152.301,160:147.997,161:148.236,162:146.237,163:146.739,164:146.206,165:146.431,166:146.292,167:146.055,168:144.742,169:145.654,170:146.826,171:145.67,172:146.797,175:145.788,176:145.247,177:146.015});
+
+function sstLap(obj, l) { const v = obj[l]; return (v && v < 200) ? v : null; }
+
+const pitLaps = [19,37,58,79,95,98];
+const labels = Array.from({length:192},(_,i)=>i+1);
+
+function fmt(s) {
+  const m=Math.floor(s/60), sec=s%60;
+  return m+':'+(sec<10?'0':'')+sec.toFixed(3);
+}
+
+// PACE CHART
+const pacePlugin = {
+  beforeDraw(chart) {
+    const {ctx,chartArea,scales}=chart;
+    if(!chartArea) return;
+    const x=scales.x;
+    // FCY band
+    const x1=x.getPixelForValue(79), x2=x.getPixelForValue(95);
+    ctx.save();
+    ctx.fillStyle='rgba(155,114,207,0.08)';
+    ctx.fillRect(x1,chartArea.top,x2-x1,chartArea.height);
+    ctx.strokeStyle='rgba(155,114,207,0.25)';
+    ctx.lineWidth=1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(x1,chartArea.top); ctx.lineTo(x1,chartArea.bottom); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2,chartArea.top); ctx.lineTo(x2,chartArea.bottom); ctx.stroke();
+    ctx.fillStyle='rgba(155,114,207,0.6)';
+    ctx.font='10px Segoe UI,sans-serif';
+    ctx.fillText('FCY',x1+4,chartArea.top+13);
+    ctx.setLineDash([]);
+    // pit lines
+    pitLaps.forEach(l=>{
+      const px=x.getPixelForValue(l-1);
+      ctx.strokeStyle='rgba(255,255,255,0.18)';
+      ctx.lineWidth=1;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(px,chartArea.top); ctx.lineTo(px,chartArea.bottom); ctx.stroke();
+      ctx.setLineDash([]);
+    });
+    // retirement
+    const rx=x.getPixelForValue(97);
+    ctx.strokeStyle='rgba(226,75,74,0.7)';
+    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(rx,chartArea.top); ctx.lineTo(rx,chartArea.bottom); ctx.stroke();
+    ctx.fillStyle='#f07070';
+    ctx.font='bold 10px Segoe UI,sans-serif';
+    ctx.fillText('RETIRED',rx+3,chartArea.top+14);
+    ctx.restore();
+  }
+};
+
+window.charts = {};
+window.charts.pace = new Chart(document.getElementById('paceChart'), {
+  type:'line',
+  data:{
+    labels,
+    datasets:[
+      // SST rivals — thin, semi-transparent background lines
+      {label:'#49 Revo-M2',data:labels.map(l=>sstLap(sst49r,l)),borderColor:'rgba(155,89,182,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#77 Wójcik',data:labels.map(l=>sstLap(sst77r,l)),borderColor:'rgba(79,108,191,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#18 Team 18',data:labels.map(l=>sstLap(sst18r,l)),borderColor:'rgba(232,80,58,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#25 Étoile',data:labels.map(l=>sstLap(sst25r,l)),borderColor:'rgba(245,166,35,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#9 TECMAS',data:labels.map(l=>sstLap(sst9r,l)),borderColor:'rgba(146,192,32,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#27 TRT27',data:labels.map(l=>sstLap(sst27r,l)),borderColor:'rgba(34,211,238,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      // #38 riders — thick, solid, on top
+      {label:'Kovács (#38)',data:labels.map(l=>kov[l]||null),borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,0.06)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,order:1},
+      {label:'Bühn (#38)',data:labels.map(l=>buhn[l]||null),borderColor:'#e24b4a',backgroundColor:'rgba(226,75,74,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[5,3],order:1},
+      {label:'Cresson (#38)',data:labels.map(l=>cres[l]||null),borderColor:'#5ab552',backgroundColor:'rgba(90,181,82,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[2,2],order:1}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{
+        title:c=>'Lap '+c[0].label,
+        label:c=>c.raw?c.dataset.label+': '+fmt(c.raw):null
+      }}
+    },
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:20,font:{size:11}},title:{display:true,text:'Lap',font:{size:11}}},
+      y:{grid:{color:'rgba(255,255,255,0.04)'},min:136,max:175,ticks:{font:{size:11},callback:v=>{const m=Math.floor(v/60);return m+':'+(v%60<10?'0':'')+Math.round(v%60)}},title:{display:true,text:'Lap time',font:{size:11}}}
+    }
+  },
+  plugins:[pacePlugin]
+});
+// Init filter UI after chart is ready
+setTimeout(() => _applyPaceFilter(0, 8), 0);
+
+// ── PACE CHART TIME FILTER ────────────────────────────────────────────────────
+// Use cum49 as race-time reference (finished full race)
+function _lapForHour(h) {
+  const target = h * 3600;
+  for (let l = 1; l <= 192; l++) {
+    if (cum49[l] != null && cum49[l] >= target) return l;
+  }
+  return 192;
+}
+
+function _applyPaceFilter(hMin, hMax) {
+  const minEl = document.getElementById('paceHMin');
+  const maxEl = document.getElementById('paceHMax');
+  const fillEl = document.getElementById('paceHFill');
+  const lblEl = document.getElementById('paceHLbl');
+
+  // Snap to step
+  const snap = v => Math.round(v * 4) / 4;
+  hMin = Math.max(0, Math.min(snap(hMin), hMax - 0.25));
+  hMax = Math.min(8, Math.max(snap(hMax), hMin + 0.25));
+
+  minEl.value = hMin;
+  maxEl.value = hMax;
+
+  // Fill bar
+  const pct = v => v / 8 * 100;
+  fillEl.style.left = pct(hMin) + '%';
+  fillEl.style.width = (pct(hMax) - pct(hMin)) + '%';
+
+  // Label
+  lblEl.textContent = hMin + 'h – ' + hMax + 'h';
+
+  // Lap range
+  const lapMin = Math.max(1, _lapForHour(hMin));
+  const lapMax = Math.min(192, _lapForHour(hMax));
+
+  // Auto Y
+  const visible = [];
+  window.charts.pace.data.datasets.forEach(ds => {
+    for (let i = lapMin - 1; i < lapMax; i++) {
+      const v = ds.data[i];
+      if (v != null && v < 200) visible.push(v);
+    }
+  });
+  const yLo = visible.length ? Math.floor(Math.min(...visible)) - 1 : 136;
+  const yHi = visible.length ? Math.ceil(Math.max(...visible)) + 1 : 175;
+
+  const chart = window.charts.pace;
+  chart.options.scales.x.min = lapMin - 1;
+  chart.options.scales.x.max = lapMax - 1;
+  chart.options.scales.y.min = yLo;
+  chart.options.scales.y.max = yHi;
+  chart.update('none');
+}
+
+function updatePaceFilter() {
+  const hMin = +document.getElementById('paceHMin').value;
+  const hMax = +document.getElementById('paceHMax').value;
+  _applyPaceFilter(hMin, hMax);
+}
+
+// Drag-the-fill-bar to pan the window
+(function() {
+  let dragging = false, dragStartX = 0, dragHMin = 0, dragHMax = 8, dragSpan = 8;
+  function onFillMouseDown(e) {
+    // only left button, not on range thumbs
+    if (e.button !== 0) return;
+    e.preventDefault();
+    dragging = true;
+    dragStartX = e.clientX;
+    dragHMin = +document.getElementById('paceHMin').value;
+    dragHMax = +document.getElementById('paceHMax').value;
+    dragSpan = dragHMax - dragHMin;
+    document.body.style.cursor = 'grabbing';
+  }
+  function onMouseMove(e) {
+    if (!dragging) return;
+    const sliderEl = document.getElementById('paceHMin');
+    const sliderW = sliderEl.parentElement.offsetWidth;
+    const deltaH = (e.clientX - dragStartX) / sliderW * 8;
+    let newMin = dragHMin + deltaH;
+    let newMax = dragHMax + deltaH;
+    // Clamp to 0-8 keeping span
+    if (newMin < 0) { newMin = 0; newMax = dragSpan; }
+    if (newMax > 8) { newMax = 8; newMin = 8 - dragSpan; }
+    _applyPaceFilter(newMin, newMax);
+  }
+  function onMouseUp() {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.cursor = '';
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const fill = document.getElementById('paceHFill');
+    if (fill) {
+      fill.style.cursor = 'grab';
+      fill.addEventListener('mousedown', onFillMouseDown);
+    }
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+})();
+
+// Drag for Rider Analysis race time fill bar
+(function() {
+  let dragging = false, dragStartX = 0, dragHMin = 0, dragHMax = 8, dragSpan = 8;
+  function onDown(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    dragging = true;
+    dragStartX = e.clientX;
+    dragHMin = +document.getElementById('rcHMinR').value;
+    dragHMax = +document.getElementById('rcHMaxR').value;
+    dragSpan = dragHMax - dragHMin;
+    document.body.style.cursor = 'grabbing';
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const sliderW = document.getElementById('rcHMinR').parentElement.offsetWidth;
+    const deltaH = (e.clientX - dragStartX) / sliderW * 8;
+    let newMin = dragHMin + deltaH;
+    let newMax = dragHMax + deltaH;
+    if (newMin < 0) { newMin = 0; newMax = dragSpan; }
+    if (newMax > 8) { newMax = 8; newMin = 8 - dragSpan; }
+    // Snap to 0.25 steps
+    newMin = Math.round(newMin * 4) / 4;
+    newMax = Math.round(newMax * 4) / 4;
+    document.getElementById('rcHMinR').value = newMin;
+    document.getElementById('rcHMaxR').value = newMax;
+    if (typeof rcUpdateTime === 'function') rcUpdateTime();
+  }
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.cursor = '';
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    // rcHFill is rendered before buildRider runs, so use event delegation
+    document.addEventListener('mousedown', e => {
+      if (e.target && e.target.id === 'rcHFill') onDown(e);
+    });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+  // Also set cursor once fill bar exists
+  setTimeout(() => {
+    const f = document.getElementById('rcHFill');
+    if (f) f.style.cursor = 'grab';
+  }, 500);
+})();
+
+// ── RACE POSITION DATA (overall position per lap, indexed 1-based, null = pit lap)
+const pos38 = [null,18,20,19,19,18,18,17,17,18,17,16,16,14,15,15,14,13,11,null,12,12,12,12,12,12,12,10,10,10,10,10,10,10,10,10,10,null,17,15,13,11,11,11,11,11,11,11,11,11,11,11,11,10,10,10,9,9,null,10,11,10,10,10,10,10,9,9,9,9,9,9,9,8,8,8,8,8,8,null,8,8,8,8,8,8,8,8,8,8,8,8,8,7,7,null,8,8,null,42,null];
+const pos49 = [null,8,8,9,9,9,9,8,9,9,8,8,8,7,7,6,6,null,16,15,8,7,7,7,7,7,8,9,9,9,9,9,9,9,9,9,null,16,14,14,11,9,9,9,9,9,9,9,8,8,8,8,8,8,8,null,11,11,11,9,9,8,8,8,9,9,10,10,10,10,10,10,10,9,null,13,13,13,null,12,12,12,13,14,14,14,14,13,13,11,11,11,11,11,null,12,12,11,11,9,9];
+const pos77 = [null,19,18,20,20,20,19,18,18,17,16,17,17,15,14,14,15,15,13,null,14,14,14,14,14,14,14,14,13,13,13,13,13,13,13,13,13,10,9,null,16,15,15,15,15,14,14,14,14,15,14,14,14,15,15,13,13,13,13,null,15,13,13,12,12,12,12,12,12,12,12,12,12,12,12,11,11,11,null,13,13,13,14,13,13,13,13,12,12,13,12,12,12,12,10,10,null,12,12,11,11];
+const pos18 = [null,17,17,17,18,19,20,19,19,19,18,18,18,16,16,16,16,16,12,null,13,13,13,13,13,13,13,13,14,15,15,15,15,16,16,16,16,13,13,13,null,16,16,17,17,17,17,16,16,16,16,16,16,16,16,14,14,14,14,12,12,null,12,13,13,13,13,13,13,13,13,13,13,13,13,12,12,12,null,10,10,10,10,12,12,12,11,14,14,14,14,14,14,null,16,14,13,13,13,12,13];
+const pos25 = [null,20,19,18,17,17,16,25,24,23,22,21,20,null,38,37,36,35,34,32,31,31,29,29,29,29,29,29,29,29,28,28,28,27,27,null,27,26,26,24,24,24,24,24,23,23,23,23,23,23,23,23,23,23,23,22,21,null,22,22,22,21,21,21,21,21,21,21,21,21,21,21,21,20,20,20,20,null,19,19,18,18,18,18,18,18,18,18,18,18,18,18,null,19,19,18,18,18,18,17,17];
+const pos9  = [null,15,16,15,14,13,13,13,13,12,11,11,11,10,10,10,10,10,null,16,16,16,17,17,17,17,17,17,17,17,18,18,18,18,18,18,18,17,16,null,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,19,18,18,18,18,null,18,18,18,18,18,18,18,17,17,17,17,17,17,17,17,17,17,null,16,16,16,17,17,17,17,17,17,17,17,17,17,null,17,17,17,17,17,17,16,16];
+const pos27 = [null,13,13,14,16,16,17,16,16,15,14,14,14,12,12,12,12,12,10,null,10,10,10,10,10,10,10,11,12,11,11,11,11,11,11,11,11,8,8,null,14,12,12,12,12,12,12,12,12,12,12,12,12,12,12,11,10,10,10,8,null,22,22,22,22,23,23,22,20,20,20,19,18,18,18,18,18,null,17,17,17,17,16,16,16,16,16,16,16,16,16,16,16,16,14,null,16,16,16,15,15];
+
+// ── CUMULATIVE RACE TIMES (seconds, indexed 1-based)
+const cum38 = [null,154.055,298.426,441.674,584.693,728.001,871.571,1015.231,1159.194,1303.020,1446.991,1590.400,1734.282,1878.457,2022.250,2165.692,2308.625,2451.606,2595.153,2744.035,2924.691,3068.996,3213.890,3359.676,3504.274,3648.260,3792.643,3937.346,4082.376,4226.825,4371.572,4516.797,4661.841,4806.112,4950.527,5095.106,5242.451,5395.473,5597.708,5742.918,5888.582,6032.454,6176.429,6319.536,6463.501,6610.145,6761.127,6905.694,7049.956,7195.349,7341.402,7486.111,7629.591,7772.985,7916.147,8061.592,8205.980,8349.306,8497.673,8679.875,8825.101,8968.875,9113.314,9257.189,9402.004,9545.766,9690.828,9836.204,9980.664,10127.349,10272.033,10416.841,10560.430,10704.188,10848.246,10992.532,11136.419,11281.275,11429.426,11633.941,11862.255,12029.971,12196.708,12360.134,12523.411,12686.169,12847.164,13007.145,13166.958,13330.138,13489.969,13648.514,13806.405,13963.830,14121.155,14282.649,14496.894,14646.643,14798.258,null,null,null];
+const cum49 = [null,150.464,292.359,434.499,576.763,718.809,861.202,1003.754,1146.320,1288.645,1431.273,1574.111,1716.327,1858.932,2002.192,2145.237,2288.070,2434.731,2620.348,2765.744,2911.656,3057.891,3202.502,3347.396,3492.991,3637.616,3782.270,3927.541,4072.303,4216.852,4362.070,4507.596,4653.221,4798.222,4942.598,5086.385,5235.124,5439.711,5582.426,5725.906,5869.337,6012.523,6155.679,6298.726,6442.972,6588.197,6742.649,6886.950,7029.373,7174.716,7318.735,7461.693,7604.119,7746.792,7888.983,8036.730,8225.412,8373.708,8520.043,8666.351,8812.492,8958.628,9104.846,9251.963,9398.930,9544.968,9691.227,9837.035,9981.802,10127.869,10272.527,10417.509,10562.332,10707.563,10857.687,11063.495,11208.258,11353.250,11538.487,11770.570,11937.658,12105.268,12272.566,12438.739,12603.303,12767.172,12928.346,13088.156,13250.306,13412.386,13572.662,13730.148,13889.729,14048.309,14213.355,14424.844,14570.337,14714.628,14858.181,15004.325,15156.703];
+const cum77 = [null,154.085,298.124,442.176,585.761,728.837,871.944,1015.648,1159.460,1302.812,1446.619,1590.750,1734.515,1878.723,2021.903,2165.304,2309.204,2453.069,2597.799,2747.997,2935.928,3081.264,3226.081,3370.189,3515.401,3661.117,3805.674,3950.687,4095.671,4241.093,4386.307,4532.646,4677.088,4821.173,4964.849,5108.524,5251.775,5394.437,5536.860,5685.467,5903.081,6049.474,6194.808,6340.614,6485.909,6635.910,6796.041,6944.545,7090.475,7237.504,7384.989,7531.683,7677.206,7822.497,7968.117,8113.421,8258.373,8403.839,8549.055,8698.437,8885.757,9032.038,9177.277,9321.682,9465.743,9610.306,9754.702,9898.627,10042.595,10186.792,10329.810,10473.151,10616.295,10759.511,10902.323,11045.559,11188.925,11333.243,11500.354,11772.473,11939.091,12105.994,12273.323,12438.412,12602.608,12765.587,12926.660,13087.797,13250.253,13412.914,13574.035,13732.561,13890.615,14049.162,14209.512,14367.560,14528.136,14786.085,14934.376,15088.254,15246.078];
+const cum18 = [null,153.849,297.044,440.461,584.270,728.305,872.393,1015.847,1159.697,1303.348,1447.341,1591.120,1735.796,1879.322,2022.580,2166.075,2309.382,2453.188,2597.311,2745.263,2925.050,3070.659,3216.735,3362.356,3509.897,3656.117,3802.699,3949.645,4096.528,4243.674,4391.192,4539.538,4685.308,4830.272,4975.570,5120.662,5266.046,5413.423,5559.874,5705.510,5855.939,6071.388,6218.241,6364.227,6509.200,6655.679,6802.172,6947.763,7094.495,7240.477,7386.971,7532.451,7679.003,7823.590,7969.067,8114.403,8260.099,8405.087,8550.675,8696.509,8842.191,8992.521,9177.026,9322.920,9466.641,9610.460,9755.225,9898.875,10042.770,10187.449,10330.444,10473.314,10616.593,10760.478,10905.107,11049.243,11193.240,11338.356,11505.514,11769.535,11936.448,12103.366,12268.948,12433.255,12596.060,12758.601,12919.620,13115.162,13285.520,13451.348,13614.295,13775.368,13937.689,14102.627,14365.144,14512.263,14659.533,14805.059,14951.621,15112.971,15278.997];
+const cum25 = [null,154.450,298.309,441.007,583.895,725.747,868.444,1030.372,1174.052,1317.585,1461.721,1606.309,1751.147,1903.807,2271.706,2418.090,2563.263,2707.894,2853.335,2998.122,3142.570,3286.935,3435.209,3580.416,3725.108,3869.367,4016.426,4163.402,4311.425,4459.809,4605.910,4752.234,4898.301,5044.224,5190.166,5340.410,5537.062,5681.367,5825.484,5970.013,6114.829,6259.171,6403.455,6547.319,6696.724,6844.257,6991.804,7136.605,7283.352,7429.413,7573.268,7717.051,7860.456,8003.685,8147.877,8292.687,8436.785,8586.897,8775.857,8921.903,9067.267,9213.979,9358.871,9503.398,9647.841,9792.731,9937.524,10083.684,10231.914,10378.295,10523.963,10669.140,10814.275,10960.142,11105.576,11250.526,11402.482,11604.256,11853.470,12027.401,12197.642,12365.028,12533.041,12699.889,12863.177,13027.400,13194.136,13360.222,13523.668,13686.642,13849.688,14009.240,14173.050,14406.941,14559.162,14707.637,14855.703,15008.295,15170.744,15335.095,15489.258];
+const cum9  = [null,153.110,296.292,439.042,581.438,723.756,867.129,1010.033,1152.700,1295.868,1439.216,1582.175,1725.517,1868.410,2010.778,2153.182,2295.781,2438.416,2585.714,2772.537,2942.104,3091.664,3238.946,3385.500,3531.855,3679.655,3826.801,3976.243,4124.069,4271.105,4418.309,4566.471,4712.806,4860.068,5006.664,5152.912,5299.419,5446.094,5593.338,5746.270,6031.874,6177.789,6323.537,6468.228,6614.767,6764.921,6910.405,7054.652,7200.061,7345.976,7490.852,7635.597,7780.084,7924.229,8068.568,8213.235,8358.017,8503.206,8648.056,8792.673,8941.746,9126.836,9271.091,9415.684,9559.868,9703.649,9846.658,9989.918,10134.561,10278.994,10422.813,10566.084,10708.968,10852.196,10995.463,11138.614,11282.069,11426.072,11642.284,11931.554,12105.262,12274.742,12442.021,12608.635,12773.312,12937.509,13099.468,13266.050,13430.296,13590.334,13748.338,13906.960,14068.715,14295.282,14447.712,14597.565,14747.199,14894.892,15052.092,15220.552,15378.925];
+const cum27 = [null,152.230,295.269,438.833,582.587,725.598,868.731,1011.750,1154.951,1297.772,1440.686,1583.589,1726.892,1870.278,2013.496,2156.459,2299.637,2442.518,2586.692,2733.773,2915.716,3062.032,3207.970,3354.437,3500.195,3646.442,3792.147,3937.801,4084.079,4229.341,4374.862,4520.390,4666.125,4810.792,4955.745,5100.814,5245.678,5390.735,5536.255,5686.076,5890.056,6034.414,6178.220,6322.657,6466.046,6612.048,6762.414,6907.645,7052.716,7197.635,7343.715,7489.749,7634.431,7778.634,7923.511,8068.221,8213.485,8358.444,8503.295,8647.593,8795.846,9222.655,9366.798,9510.828,9654.884,9798.960,9942.326,10085.744,10230.370,10374.052,10517.765,10660.858,10804.717,10948.764,11091.722,11235.366,11380.508,11567.066,11793.054,11954.458,12115.270,12277.044,12438.621,12599.317,12757.480,12915.507,13071.495,13232.083,13394.958,13551.990,13706.314,13861.217,14014.185,14166.818,14319.242,14475.064,14683.348,14829.889,14977.286,15141.279,15307.615];
+
+// Extend position arrays to full race (1-based index)
+Object.assign(pos49,{101:9,102:9,103:9,104:9,105:9,106:9,107:9,108:9,109:8,110:8,111:8,112:8,114:8,115:8,116:7,118:7,119:7,120:7,121:7,122:7,123:7,124:7,125:7,126:7,127:7,128:7,129:7,130:7,131:7,132:7,133:7,134:7,135:7,136:7,137:7,138:7,140:7,141:7,142:7,143:7,144:7,145:7,146:7,147:7,148:7,149:7,150:7,151:7,152:7,153:7,154:7,155:7,156:7,157:6,158:6,159:6,160:6,162:6,163:6,164:6,165:6,166:6,167:6,168:6,169:6,170:6,171:6,172:6,173:6,174:6,175:6,176:6,178:6,179:6,180:6,181:6,182:6,183:6,184:6,185:6,186:6});
+Object.assign(pos77,{101:10,102:10,103:11,104:11,105:11,106:11,107:11,108:11,109:10,110:10,111:10,112:10,113:10,114:10,115:9,117:9,118:8,119:9,120:9,121:9,122:9,123:9,124:9,125:9,126:9,127:8,128:8,129:8,130:8,131:8,132:8,133:8,134:8,135:8,136:8,138:9,139:9,140:9,141:9,142:9,143:9,144:9,145:9,146:9,147:9,148:9,149:9,150:9,151:9,152:8,153:9,154:9,155:9,156:9,157:9,158:9,160:9,161:9,162:9,163:8,164:8,165:8,166:8,167:8,168:7,169:7,170:7,171:7,172:7,173:7,174:7,175:7,176:7,177:7,179:7,180:7,181:7,182:7,183:7,184:7,185:7,186:7});
+Object.assign(pos18,{101:13,102:13,103:13,104:13,105:13,106:13,107:13,108:13,109:12,110:13,111:13,112:12,113:12,116:13,117:12,118:12,119:12,120:12,121:12,122:12,123:12,124:12,125:12,126:12,127:12,128:12,129:12,130:12,131:12,132:12,133:12,134:12,135:11,137:12,138:12,139:11,140:11,141:11,142:11,143:12,144:12,145:12,146:12,147:12,148:12,149:12,150:12,151:11,152:11,153:10,154:10,155:10,156:10,157:10,159:11,160:10,161:10,162:10,163:9,164:10,165:10,166:10,167:10,168:9,169:10,170:10,171:10,172:10,173:10,174:10,175:9,176:8,177:8,178:8,180:9,181:9,182:9,183:9,184:9,185:9});
+Object.assign(pos25,{101:17,102:17,103:17,104:17,105:17,106:17,107:17,108:17,109:16,110:16,111:16,112:16,113:16,115:16,116:16,117:15,118:15,119:15,120:15,121:15,122:15,123:15,124:15,125:15,126:15,127:15,128:15,129:15,130:15,131:15,132:15,133:15,134:15,135:15,136:15,137:15,139:15,140:15,141:15,142:15,143:15,144:15,145:15,146:15,147:15,148:15,149:15,150:15,151:15,152:15,153:14,154:14,155:14,156:14,157:14,158:14,159:14,160:14,162:14,163:13,164:13,165:13,166:13,167:13,168:13,169:13,170:13,171:12,172:12,173:12,174:12,175:12,176:11,177:11,178:11,179:11,181:11,182:11,183:11});
+Object.assign(pos9, {101:16,102:16,103:16,104:16,105:16,106:16,107:16,108:16,109:15,110:15,111:15,112:15,113:15,115:15,116:15,117:14,118:14,119:14,120:14,121:14,122:14,123:14,124:13,125:13,126:13,127:13,128:13,129:13,130:13,131:13,132:13,133:13,134:13,135:13,137:13,138:13,139:12,140:12,141:12,142:12,143:11,144:11,145:11,146:11,147:11,148:11,149:11,151:12,152:12,153:11,154:11,155:11,156:11,157:11,158:11,160:11,161:11,162:11,163:10,164:9,165:9,166:9,167:9,168:8,169:8,170:8,171:8,172:8,173:8,174:8,176:13,177:13,178:13,179:13,180:13,181:13});
+Object.assign(pos27,{101:15,102:15,103:15,104:15,105:15,106:15,107:15,108:15,109:14,110:14,111:14,112:14,113:13,114:13,116:12,117:11,118:11,119:11,120:11,121:11,122:11,123:11,124:11,125:11,126:11,127:11,128:11,129:11,130:11,131:10,132:10,133:9,134:9,135:9,136:9,138:8,139:8,140:8,141:8,142:8,143:8,144:8,145:8,146:8,147:8,148:8,149:8,150:8,151:8,153:23,154:23,155:23,156:23,157:23,158:22,159:22,160:22,161:22,162:21,163:20,164:19,165:19,166:19,167:18,168:18,169:18,170:18,171:18,172:18,174:20,175:19,176:19,177:19});
+
+// Extend cumulative time arrays to full race
+Object.assign(cum49,{101:15310.67,102:15456.169,103:15599.716,104:15742.7,105:15886.844,106:16034.183,107:16185.341,108:16332.027,109:16475.058,110:16618.564,111:16761.56,112:16905.872,113:17053.501,114:17240.367,115:17387.121,116:17549.659,117:17760.58,118:17989.959,119:18155.033,120:18322.279,121:18487.082,122:18653.052,123:18819.393,124:18980.879,125:19140.722,126:19299.547,127:19458.591,128:19617.776,129:19780.957,130:19941.329,131:20104.663,132:20269.229,133:20431.454,134:20589.783,135:20748.503,136:20907.207,137:21066.971,138:21236.706,139:21413.838,140:21640.125,141:21803.596,142:21965.192,143:22127.341,144:22290.391,145:22453.784,146:22615.47,147:22778.945,148:22941.636,149:23103.038,150:23265.55,151:23427.301,152:23588.262,153:23748.75,154:23909.522,155:24069.443,156:24230.165,157:24389.094,158:24548.444,159:24707.294,160:24867.046,161:25030.271,162:25257.933,163:25409.337,164:25559.824,165:25708.191,166:25857.459,167:26007.932,168:26155.692,169:26305.25,170:26451.382,171:26598.63,172:26744.598,173:26890.851,174:27036.472,175:27183.202,176:27329.74,177:27479.984,178:27676.943,179:27827.648,180:27977.557,181:28127.134,182:28277.462,183:28427.886,184:28578.907,185:28730.127,186:28884.589});
+Object.assign(cum77,{101:15400.463,102:15547.674,103:15693.489,104:15837.886,105:15984.381,106:16143.042,107:16294.753,108:16440.997,109:16586.863,110:16731.75,111:16876.873,112:17021.515,113:17166.062,114:17309.56,115:17460.471,116:17629.018,117:17881.616,118:18046.46,119:18211.624,120:18378.868,121:18545.535,122:18711.633,123:18876.203,124:19038.569,125:19199.95,126:19361.38,127:19521.264,128:19684.401,129:19849.913,130:20015.444,131:20182.903,132:20348.663,133:20510.657,134:20672.323,135:20832.436,136:20991.283,137:21159.455,138:21392.963,139:21562.29,140:21730.264,141:21895.834,142:22061.977,143:22226.949,144:22392.886,145:22559.922,146:22725.986,147:22891.061,148:23055.625,149:23219.478,150:23382.052,151:23544.13,152:23708.1,153:23871.5,154:24032.653,155:24192.577,156:24351.877,157:24513.508,158:24673.216,159:24836.578,160:25094.617,161:25256.638,162:25410.229,163:25561.239,164:25709.669,165:25860.279,166:26011.74,167:26159.665,168:26312.426,169:26460.769,170:26607.323,171:26753.356,172:26899.007,173:27044.518,174:27189.947,175:27334.462,176:27478.766,177:27624.593,178:27774.155,179:27960.929,180:28110.696,181:28257.723,182:28403.473,183:28549.117,184:28693.824,185:28837.893,186:28982.117});
+Object.assign(cum18,{101:15430.312,102:15577.925,103:15724.545,104:15871.225,105:16023.759,106:16177.45,107:16326.189,108:16470.976,109:16615.573,110:16760.181,111:16905.901,112:17050.057,113:17195.927,114:17345.519,115:17582.828,116:17818.99,117:17985.089,118:18151.953,119:18318.37,120:18483.433,121:18649.268,122:18815.388,123:18978.122,124:19138.351,125:19297.014,126:19455.404,127:19613.337,128:19775.701,129:19937.106,130:20101.584,131:20266.542,132:20427.272,133:20585.767,134:20743.354,135:20900.97,136:21062.872,137:21327.276,138:21499.278,139:21668.281,140:21834.93,141:22000.032,142:22163.8,143:22327.292,144:22492.897,145:22657.125,146:22821.192,147:22985.106,148:23147.979,149:23309.447,150:23471.845,151:23633.374,152:23795.614,153:23957.344,154:24118.398,155:24277.628,156:24436.92,157:24595.509,158:24757.979,159:25004.419,160:25162.271,161:25318.453,162:25470.54,163:25621.13,164:25770.274,165:25932.151,166:26081.884,167:26232.704,168:26385.234,169:26533.938,170:26681.833,171:26828.651,172:26975.017,173:27119.611,174:27265.204,175:27410.463,176:27556.389,177:27702.3,178:27848.621,179:28000.126,180:28195.684,181:28345.943,182:28494.795,183:28643.445,184:28791.142,185:28939.962});
+Object.assign(cum25,{101:15640.793,102:15790.599,103:15938.531,104:16104.309,105:16267.411,106:16414.829,107:16561.58,108:16707.722,109:16853.967,110:17000.138,111:17144.963,112:17290.487,113:17438.077,114:17613.181,115:17846.931,116:18012.887,117:18180.02,118:18345.543,119:18511.479,120:18678.119,121:18842.671,122:19004.786,123:19165.459,124:19325.946,125:19485.999,126:19648.595,127:19813.976,128:19978.051,129:20144.516,130:20311.494,131:20477.584,132:20639.135,133:20800.586,134:20961.195,135:21126.155,136:21297.108,137:21472.323,138:21654.27,139:21880.64,140:22047.512,141:22212.05,142:22378.384,143:22546.569,144:22712.835,145:22878.168,146:23043.089,147:23206.791,148:23374.138,149:23539.386,150:23705.98,151:23872.332,152:24045.843,153:24210.862,154:24374.176,155:24539.706,156:24701.837,157:24863.745,158:25027.421,159:25190.23,160:25349.661,161:25513.279,162:25743.824,163:25903.629,164:26058.602,165:26211.858,166:26363.149,167:26515.0,168:26666.469,169:26819.547,170:26969.497,171:27119.404,172:27267.056,173:27414.197,174:27561.664,175:27709.231,176:27857.601,177:28006.27,178:28155.865,179:28304.156,180:28461.973,181:28649.497,182:28799.249,183:28949.331});
+Object.assign(cum9, {101:15529.263,102:15675.901,103:15828.463,104:15976.391,105:16137.843,106:16291.891,107:16436.815,108:16581.152,109:16725.025,110:16869.909,111:17014.205,112:17159.204,113:17303.513,114:17457.221,115:17683.224,116:17846.811,117:18012.008,118:18175.909,119:18338.667,120:18503.318,121:18667.839,122:18830.651,123:18992.24,124:19152.707,125:19314.042,126:19471.752,127:19632.399,128:19793.48,129:19955.699,130:20118.713,131:20284.574,132:20446.902,133:20608.272,134:20769.201,135:20929.524,136:21097.407,137:21337.271,138:21506.381,139:21674.772,140:21840.488,141:22002.706,142:22164.458,143:22326.166,144:22489.125,145:22652.081,146:22816.852,147:22978.032,148:23138.9,149:23301.635,150:23468.756,151:23665.088,152:23827.812,153:23989.095,154:24147.215,155:24304.594,156:24462.51,157:24618.682,158:24775.205,159:24935.797,160:25171.342,161:25324.598,162:25476.342,163:25623.947,164:25769.685,165:25915.145,166:26059.747,167:26209.153,168:26355.667,169:26503.163,170:26649.035,171:26793.334,172:26937.819,173:27080.625,174:27224.279,175:27637.784,176:28265.443,177:28412.334,178:28557.887,179:28701.789,180:28845.653,181:28989.208});
+Object.assign(cum27,{101:15458.894,102:15604.693,103:15749.257,104:15894.023,105:16048.66,106:16206.719,107:16358.25,108:16503.268,109:16647.555,110:16791.431,111:16935.927,112:17080.307,113:17225.552,114:17370.432,115:17529.092,116:17803.295,117:17965.382,118:18126.524,119:18286.702,120:18447.072,121:18607.055,122:18769.684,123:18930.979,124:19090.108,125:19245.177,126:19398.453,127:19552.926,128:19712.5,129:19874.358,130:20037.278,131:20201.95,132:20364.506,133:20524.467,134:20680.735,135:20836.525,136:20991.572,137:21158.599,138:21385.367,139:21550.136,140:21713.351,141:21876.689,142:22040.257,143:22202.65,144:22364.787,145:22528.411,146:22691.439,147:22852.755,148:23013.541,149:23174.089,150:23334.294,151:23495.768,152:23723.765,153:25290.312,154:25450.64,155:25605.846,156:25757.563,157:25907.98,158:26057.884,159:26210.185,160:26358.182,161:26506.418,162:26652.655,163:26799.394,164:26945.6,165:27092.031,166:27238.323,167:27384.378,168:27529.12,169:27674.774,170:27821.6,171:27967.27,172:28114.067,173:28264.64,174:28447.441,175:28593.229,176:28738.476,177:28884.491});
+
+const RIVAL_COLORS = {
+  49: '#9B59B6', 77: '#4F6CBF', 18: '#E8503A', 25: '#F5A623', 9: '#92C020', 27: '#22D3EE'
+};
+const RIVAL_LABELS = {
+  49: '#49 Revo-M2', 77: '#77 Wójcik', 18: '#18 Team 18', 25: '#25 Étoile', 9: '#9 TECMAS', 27: '#27 TRT27'
+};
+const posData = {38:pos38, 49:pos49, 77:pos77, 18:pos18, 25:pos25, 9:pos9, 27:pos27};
+const cumData = {38:cum38, 49:cum49, 77:cum77, 18:cum18, 25:cum25, 9:cum9, 27:cum27};
+
+function buildPosition() {
+  window._pos = true;
+  const laps100 = Array.from({length:192},(_,i)=>i+1);
+
+  // SST teams only (not #27 TRT27 which is EWC Championship class)
+  const sstPosData = {38:pos38, 49:pos49, 77:pos77, 18:pos18, 25:pos25, 9:pos9};
+  const sstNums = [38, 49, 77, 18, 25, 9];
+
+  function sstRank(teamNum, lap) {
+    const myPos = sstPosData[teamNum][lap];
+    if (!myPos || myPos > 100) return null;
+    const positions = sstNums.map(t => sstPosData[t][lap]).filter(p => p && p < 100);
+    positions.sort((a,b) => a-b);
+    const rank = positions.indexOf(myPos) + 1;
+    return rank > 0 ? rank : null;
+  }
+
+  const datasets = [
+    {label:'#38 Champion-Hert', data: laps100.map(l=>sstRank(38,l)), borderColor:'#ffffff', pointRadius:1.5, pointHoverRadius:5, spanGaps:false, borderWidth:3, order:1},
+    ...([49,77,18,25,9].map(n=>({
+      label: RIVAL_LABELS[n], data: laps100.map(l=>sstRank(n,l)),
+      borderColor: RIVAL_COLORS[n], pointRadius:0, pointHoverRadius:4,
+      spanGaps:false, borderWidth:1.5, borderDash:[4,2], order:5
+    })))
+  ];
+
+  window.charts.pos = new Chart(document.getElementById('posChart'), {
+    type:'line', data:{labels:laps100, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{title:c=>'Lap '+c[0].label, label:c=>c.raw?c.dataset.label+': SST P'+c.raw:null}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'}, ticks:{maxTicksLimit:20,font:{size:11}}, title:{display:true,text:'Lap',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'}, reverse:true, min:1, max:6,
+           ticks:{font:{size:11}, stepSize:1, callback:v=>'P'+v},
+           title:{display:true,text:'SST Class Position',font:{size:11}}}
+      }
+    },
+    plugins:[{
+      beforeDraw(chart){
+        const {ctx,chartArea,scales}=chart;
+        if(!chartArea) return;
+        const x1=scales.x.getPixelForValue(79), x2=scales.x.getPixelForValue(95);
+        ctx.save();
+        ctx.fillStyle='rgba(155,114,207,0.07)';
+        ctx.fillRect(x1,chartArea.top,x2-x1,chartArea.height);
+        const rx=scales.x.getPixelForValue(97);
+        ctx.strokeStyle='rgba(226,75,74,0.6)';
+        ctx.lineWidth=2; ctx.setLineDash([4,3]);
+        ctx.beginPath(); ctx.moveTo(rx,chartArea.top); ctx.lineTo(rx,chartArea.bottom); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle='#f07070'; ctx.font='bold 10px Segoe UI,sans-serif';
+        ctx.fillText('RETIRED',rx+3,chartArea.top+14);
+        ctx.restore();
+      }
+    }]
+  });
+
+  // Peak position table
+  const peakEl = document.getElementById('peakPosTable');
+  const teams = [{n:38,d:pos38,c:'#4d9de0'},{n:49,d:pos49,c:'#9B59B6'},{n:77,d:pos77,c:'#4F6CBF'},{n:18,d:pos18,c:'#E8503A'},{n:25,d:pos25,c:'#F5A623'},{n:9,d:pos9,c:'#92C020'},{n:27,d:pos27,c:'#22D3EE'}];
+  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
+  html += '<tr style="border-bottom:0.5px solid var(--border)"><th style="padding:5px 8px;text-align:left;font-size:11px;color:var(--text2)">Team</th><th style="padding:5px 8px;text-align:right;font-size:11px;color:var(--text2)">Best position</th><th style="padding:5px 8px;text-align:right;font-size:11px;color:var(--text2)">On lap</th></tr>';
+  teams.forEach(t => {
+    const valid = laps100.map(l=>t.d[l]).filter(v=>v!==null&&v!==undefined);
+    const best = Math.min(...valid);
+    const bestLap = laps100.find(l=>t.d[l]===best);
+    html += `<tr style="border-bottom:0.5px solid var(--border2)"><td style="padding:5px 8px;color:${t.c};font-weight:500">${t.n===38?'#38 Champion-Hert':RIVAL_LABELS[t.n]}</td><td style="padding:5px 8px;text-align:right;font-weight:500">P${best}</td><td style="padding:5px 8px;text-align:right;color:var(--text2)">L${bestLap}</td></tr>`;
+  });
+  html += '</table>';
+  peakEl.innerHTML = html;
+
+  // Position at lap 95 (last clean lap for #38)
+  const retEl = document.getElementById('posAtRet');
+  let html2 = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
+  html2 += '<tr style="border-bottom:0.5px solid var(--border)"><th style="padding:5px 8px;text-align:left;font-size:11px;color:var(--text2)">Team</th><th style="padding:5px 8px;text-align:right;font-size:11px;color:var(--text2)">Pos at Lap 95</th><th style="padding:5px 8px;text-align:right;font-size:11px;color:var(--text2)">Gap to #38</th></tr>';
+  const ref38 = pos38[95];
+  teams.forEach(t => {
+    const p = t.d[95]||t.d[94];
+    const gap = t.n===38?'—':(p < ref38 ? '+'+(ref38-p)+' pos ahead' : (p > ref38 ? (p-ref38)+' pos behind' : 'same'));
+    const isCh = t.n===38;
+    html2 += `<tr style="border-bottom:0.5px solid var(--border2)${isCh?';background:rgba(77,157,224,0.07)':''}"><td style="padding:5px 8px;color:${t.c};font-weight:${isCh?600:400}">${t.n===38?'#38 Champion-Hert':RIVAL_LABELS[t.n]}</td><td style="padding:5px 8px;text-align:right;font-weight:500">P${p||'—'}</td><td style="padding:5px 8px;text-align:right;color:var(--text2)">${gap}</td></tr>`;
+  });
+  html2 += '</table>';
+  retEl.innerHTML = html2;
+}
+
+function buildGap() {
+  window._gap = true;
+  const laps95 = Array.from({length:192},(_,i)=>i+1);
+  const rivals = [
+    {n:49, cum:cum49}, {n:77, cum:cum77}, {n:18, cum:cum18},
+    {n:25, cum:cum25}, {n:9,  cum:cum9 }, {n:27, cum:cum27}
+  ];
+
+  // gap = cum_rival[l] - cum_38[l] (positive = rival behind #38)
+  const datasets = rivals.map(r => ({
+    label: RIVAL_LABELS[r.n],
+    data: laps95.map(l => {
+      const c38 = cum38[l], cr = r.cum[l];
+      return (c38 != null && cr != null) ? +(cr - c38).toFixed(1) : null;
+    }),
+    borderColor: RIVAL_COLORS[r.n],
+    backgroundColor: 'transparent',
+    pointRadius: 0, pointHoverRadius: 5,
+    spanGaps: false, borderWidth: 1.8
+  }));
+
+  window.charts.gap = new Chart(document.getElementById('gapChart'), {
+    type:'line', data:{labels:laps95, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true, position:'bottom', labels:{font:{size:11},color:'#8b90a4',boxWidth:10,usePointStyle:true}},
+        tooltip:{callbacks:{
+          title:c=>'Lap '+c[0].label,
+          label:c=>{
+            if(c.raw==null) return null;
+            const s=Math.abs(c.raw).toFixed(1);
+            return c.dataset.label+': '+(c.raw>=0?'+'+s+'s behind':s+'s ahead');
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'}, ticks:{maxTicksLimit:20,font:{size:11}}, title:{display:true,text:'Lap',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},
+           ticks:{font:{size:11}, callback:v=>(v>=0?'+':'')+v+'s'},
+           title:{display:true,text:'Gap (rival - #38)',font:{size:11}}}
+      }
+    },
+    plugins:[{
+      beforeDraw(chart){
+        const {ctx,chartArea,scales}=chart;
+        if(!chartArea) return;
+        // Zero line highlight
+        const y0=scales.y.getPixelForValue(0);
+        ctx.save();
+        ctx.strokeStyle='rgba(255,255,255,0.2)';
+        ctx.lineWidth=1; ctx.setLineDash([]);
+        ctx.beginPath(); ctx.moveTo(chartArea.left,y0); ctx.lineTo(chartArea.right,y0); ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font='9px Segoe UI,sans-serif';
+        ctx.fillText('← rivals ahead of #38   |   rivals behind #38 →',chartArea.left+4,y0-4);
+        // FCY band
+        const x1=scales.x.getPixelForValue(79),x2=scales.x.getPixelForValue(95);
+        ctx.fillStyle='rgba(155,114,207,0.07)';
+        ctx.fillRect(x1,chartArea.top,x2-x1,chartArea.height);
+        ctx.fillStyle='rgba(155,114,207,0.5)'; ctx.font='10px Segoe UI,sans-serif';
+        ctx.fillText('FCY',x1+3,chartArea.top+13);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function buildRider() {
+  window._rider = true;
+  const DPR = window.devicePixelRatio || 1;
+
+  // ── Stint definitions ────────────────────────────────────────────────────────
+  const FCY_LAPS = new Set([80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95]);
+  const PIT38 = new Set([1,19,38,59,79,95,99,100]);
+  const THRESHOLD = 148; // dirty lap cutoff (seconds)
+
+  const RC_RIDERS = [
+    {key:'kov',  name:'Kovács',  col:'#4d9de0', data:kov,
+     stints:[{first:2,last:18},{first:60,last:79}]},
+    {key:'cres', name:'Cresson', col:'#5ab552', data:cres,
+     stints:[{first:20,last:37},{first:80,last:95}]},
+    {key:'buhn', name:'Bühn',   col:'#e24b4a', data:buhn,
+     stints:[{first:39,last:58},{first:97,last:98}]}
+  ];
+
+  // Build per-stint data
+  const allStints = [];
+  RC_RIDERS.forEach(r=>{
+    r.stints.forEach((s,si)=>{
+      const laps=[];
+      for(let l=s.first;l<=s.last;l++){
+        const t=r.data[l];
+        if(t!=null) laps.push({lap:l, t});
+      }
+      const allT=laps.filter(x=>!PIT38.has(x.lap)&&x.t<200).map(x=>x.t).sort((a,b)=>a-b);
+      const cleanT=allT.filter(t=>t<THRESHOLD);
+      const avgT=cleanT.length?+(cleanT.reduce((a,b)=>a+b,0)/cleanT.length).toFixed(3):null;
+      const fastestClean=cleanT.length?Math.min(...cleanT):null;
+      const p=pct=>allT.length?allT[Math.round((allT.length-1)*pct)]:null;
+      allStints.push({r, name:r.name, col:r.col, stintNum:si+1,
+        firstLap:s.first, lastLap:s.last, laps, allT, cleanT,
+        avgT, fastestClean, p5:p(0.05), p95:p(0.95), p25:p(0.25), p75:p(0.75)});
+    });
+  });
+
+  // ── Canvas draw ──────────────────────────────────────────────────────────────
+  // ── State for controls ──────────────────────────────────────────────────────
+  let rcShow = {dots:true, bands:true, pace:true, fast:true};
+  let rcBand1Pct = 90, rcBand2Pct = 50;
+  let rcOrder = 'chrono';
+  let rcHMin_v = 0, rcHMax_v = 8;
+
+  // Lap → race hour via cum49
+  const _lapH = l => cum49[l] ? cum49[l]/3600 : l*(2.4/60);
+
+  const cv = document.getElementById('rcChart');
+  function draw_rc(){
+    // Filter by time window
+    const visible = allStints.filter(d=>_lapH(d.lastLap)>=rcHMin_v && _lapH(d.firstLap)<=rcHMax_v);
+    if(!visible.length) return;
+
+    // Sort
+    const sorted = [...visible];
+    if(rcOrder==='chrono')  sorted.sort((a,b)=>a.firstLap-b.firstLap);
+    else if(rcOrder==='rider') sorted.sort((a,b)=>RC_RIDERS.indexOf(a.r)-RC_RIDERS.indexOf(b.r)||a.firstLap-b.firstLap);
+    else if(rcOrder==='pace') sorted.sort((a,b)=>(a.avgT||999)-(b.avgT||999));
+    else if(rcOrder==='band') sorted.sort((a,b)=>{
+      const ra=a.cleanT.length?Math.max(...a.cleanT)-Math.min(...a.cleanT):999;
+      const rb=b.cleanT.length?Math.max(...b.cleanT)-Math.min(...b.cleanT):999;
+      return ra-rb;
+    });
+
+    const wrap = cv.parentElement;
+    const W0 = wrap.clientWidth || 900;
+    const totalLaps = sorted.reduce((a,d)=>a+d.laps.filter(x=>!PIT38.has(x.lap)&&x.t<200).length,0);
+    const H0 = Math.max(400, Math.round(totalLaps * 3.2) + 80);
+    cv.width = W0*DPR; cv.height = H0*DPR;
+    cv.style.width = W0+'px'; cv.style.height = H0+'px';
+    const cx = cv.getContext('2d');
+    cx.setTransform(DPR,0,0,DPR,0,0);
+    const W=W0, H=H0;
+
+    cx.fillStyle='#1a1d27'; cx.fillRect(0,0,W,H);
+
+    const allCleanT = sorted.flatMap(d=>d.cleanT);
+    if(!allCleanT.length) return;
+    const gMin=Math.min(...allCleanT), gMax=Math.max(...allCleanT);
+    const gRange=gMax-gMin;
+    const yMin=gMin-gRange*0.25, yMax=gMax+gRange*0.25;
+
+    const PL=64, PR=20, PT=36, PB=28, SGAP=5;
+    const totalW = W-PL-PR-SGAP*(sorted.length-1);
+    const ph = H-PT-PB;
+    let xOff=PL;
+    sorted.forEach(d=>{
+      const lapCount=d.laps.filter(x=>!PIT38.has(x.lap)&&x.t<200).length||1;
+      d.xS=xOff; d.sW=Math.max(8,Math.round(totalW*lapCount/totalLaps));
+      xOff+=d.sW+SGAP;
+    });
+
+    const py=t=>PT+ph*(1-(t-yMin)/(yMax-yMin));
+    const pyC=t=>Math.min(PT+ph,Math.max(PT,py(t)));
+
+    // Y grid
+    const rawStep=(yMax-yMin)/6;
+    const yStep=[0.5,1,2,5].find(s=>s>=rawStep)||5;
+    const yStart=Math.ceil(yMin/yStep)*yStep;
+    for(let y=yStart;y<=yMax+0.001;y=Math.round((y+yStep)*1000)/1000){
+      const yy=py(y); if(yy<PT-4||yy>PT+ph+4) continue;
+      cx.strokeStyle='#22263a'; cx.lineWidth=1; cx.setLineDash([]);
+      cx.beginPath(); cx.moveTo(PL,yy); cx.lineTo(W-PR,yy); cx.stroke();
+      cx.fillStyle='#8890a4'; cx.font='11px Segoe UI,sans-serif'; cx.textAlign='right';
+      const m=Math.floor(y/60), sc=(y%60).toFixed(0);
+      cx.fillText(m+':'+(+sc<10?'0':'')+sc, PL-5, yy+4);
+    }
+
+    // Draw stints
+    sorted.forEach((d,idx)=>{
+      const {xS,sW,firstLap,lastLap,laps,allT,cleanT,avgT,fastestClean,col}=d;
+      const xE=xS+sW;
+      const lapW=sW/Math.max(1,lastLap-firstLap);
+      const pxL=lap=>xS+(lap-firstLap)/Math.max(1,lastLap-firstLap)*sW;
+      const rgb=parseInt(col.slice(1,3),16)+','+parseInt(col.slice(3,5),16)+','+parseInt(col.slice(5,7),16);
+
+      cx.fillStyle=idx%2===0?'rgba(255,255,255,0.018)':'rgba(0,0,0,0)';
+      cx.fillRect(xS,PT,sW,ph);
+
+      laps.forEach(lap=>{
+        if(FCY_LAPS.has(lap.lap)){
+          const x0=Math.max(xS,pxL(lap.lap)-lapW/2), x1=Math.min(xE,pxL(lap.lap)+lapW/2);
+          cx.fillStyle='rgba(255,210,50,0.10)'; cx.fillRect(x0,PT,x1-x0,ph);
+        }
+      });
+
+      cx.fillStyle=col; cx.fillRect(xS,PT,sW,3);
+      cx.fillStyle=col; cx.font='bold 11px Segoe UI,sans-serif'; cx.textAlign='center';
+      if(sW>30) cx.fillText(d.name[0]+'·S'+d.stintNum, xS+sW/2, PT-5);
+      else if(sW>14) cx.fillText('S'+d.stintNum, xS+sW/2, PT-5);
+
+      if(rcShow.bands) {
+        const exc1=(1-rcBand1Pct/100)/2;
+        const b1Lo=allT.length?allT[Math.max(0,Math.round(allT.length*exc1))]:null;
+        const b1Hi=allT.length?allT[Math.min(allT.length-1,Math.round(allT.length*(1-exc1)))]:null;
+        if(b1Lo!=null&&b1Hi!=null){
+          const y1=pyC(Math.min(b1Hi,yMax)), y2=pyC(Math.max(b1Lo,yMin));
+          cx.fillStyle='rgba('+rgb+',0.28)'; cx.fillRect(xS,y1,sW,y2-y1);
+        }
+        const exc2=(1-rcBand2Pct/100)/2;
+        const b2Lo=allT.length?allT[Math.max(0,Math.round(allT.length*exc2))]:null;
+        const b2Hi=allT.length?allT[Math.min(allT.length-1,Math.round(allT.length*(1-exc2)))]:null;
+        if(b2Lo!=null&&b2Hi!=null){
+          const y1=pyC(Math.min(b2Hi,yMax)), y2=pyC(Math.max(b2Lo,yMin));
+          cx.fillStyle='rgba('+rgb+',0.48)'; cx.fillRect(xS,y1,sW,y2-y1);
+        }
+      }
+
+      if(rcShow.pace && avgT!=null){
+        const ay=py(avgT);
+        cx.strokeStyle=col; cx.lineWidth=2.5; cx.setLineDash([]);
+        cx.beginPath(); cx.moveTo(xS,ay); cx.lineTo(xE,ay); cx.stroke();
+        if(sW>50){
+          const m=Math.floor(avgT/60), sc=(avgT%60).toFixed(2);
+          cx.fillStyle=col; cx.font='11px Segoe UI,sans-serif'; cx.textAlign='center';
+          cx.fillText(m+':'+(+sc<10?'0':'')+sc, xS+sW/2, ay-4);
+        }
+      }
+
+      if(rcShow.fast && fastestClean!=null){
+        const fy=py(fastestClean);
+        cx.strokeStyle=col; cx.lineWidth=1.5; cx.setLineDash([3,3]);
+        cx.beginPath(); cx.moveTo(xS,fy); cx.lineTo(xE,fy); cx.stroke();
+        cx.setLineDash([]);
+      }
+
+      if(rcShow.dots){
+        laps.forEach(lap=>{
+          if(PIT38.has(lap.lap)||lap.t==null||lap.t>200) return;
+          const isFCY=FCY_LAPS.has(lap.lap);
+          const dirty=!isFCY&&lap.t>THRESHOLD;
+          const xx=pxL(lap.lap);
+          if(lap.t>yMax||lap.t<yMin) return;
+          const yy=py(lap.t);
+          cx.beginPath(); cx.arc(xx,yy,isFCY?2:dirty?1.5:2.5,0,Math.PI*2);
+          cx.fillStyle=isFCY?'rgba(255,210,50,0.7)':dirty?'rgba('+rgb+',0.25)':col;
+          cx.fill();
+        });
+      }
+    });
+
+    cx.fillStyle='#8890a4'; cx.font='11px Segoe UI,sans-serif'; cx.textAlign='center';
+    cx.fillText('Stints ('+sorted.length+' shown · '+totalLaps+' laps)', PL+totalW/2, H-6);
+  }
+
+  function rcToggle(key) {
+    rcShow[key]=!rcShow[key];
+    const el=document.getElementById('rc_'+key);
+    if(el) el.classList.toggle('on',rcShow[key]);
+    draw_rc();
+  }
+  function rcSetOrder(ord) {
+    rcOrder=ord;
+    ['chrono','rider','pace','band'].forEach(o=>{
+      const el=document.getElementById('rc_ord_'+o);
+      if(el) el.classList.toggle('on',o===ord);
+    });
+    draw_rc();
+  }
+  function rcUpdateTime() {
+    let hMin=+document.getElementById('rcHMinR').value;
+    let hMax=+document.getElementById('rcHMaxR').value;
+    if(hMin>hMax-0.25){hMin=hMax-0.25;document.getElementById('rcHMinR').value=hMin;}
+    rcHMin_v=hMin; rcHMax_v=hMax;
+    const pct=v=>v/8*100;
+    const fill=document.getElementById('rcHFill');
+    fill.style.left=pct(hMin)+'%'; fill.style.width=(pct(hMax)-pct(hMin))+'%';
+    document.getElementById('rcHLbl').textContent=hMin+'h–'+hMax+'h';
+    draw_rc();
+  }
+
+  draw_rc();
+  // Init time fill bar
+  (()=>{const fill=document.getElementById('rcHFill');if(fill){fill.style.left='0%';fill.style.width='100%';fill.style.cursor='grab';}})();
+  window.addEventListener('resize', ()=>{ if(window._rider) draw_rc(); });
+
+  // ── Rider stat cards ─────────────────────────────────────────────────────────
+  const cardsEl = document.getElementById('riderCards');
+  cardsEl.innerHTML = RC_RIDERS.map(r=>{
+    const allLaps=Object.entries(r.data).map(([l,v])=>({l:+l,v}));
+    const clean=allLaps.filter(x=>x.v<THRESHOLD&&!PIT38.has(x.l));
+    const cleanNoFCY=clean.filter(x=>!FCY_LAPS.has(x.l));
+    const vs=cleanNoFCY.map(x=>x.v);
+    if(!vs.length) return '';
+    const best=Math.min(...vs), avg=+(vs.reduce((a,b)=>a+b,0)/vs.length).toFixed(3);
+    const sd=+(Math.sqrt(vs.reduce((a,b)=>a+(b-avg)**2,0)/vs.length)).toFixed(2);
+    const consistency=sd<0.8?'Excellent':sd<1.5?'Good':'Variable';
+    const rgb=parseInt(r.col.slice(1,3),16)+','+parseInt(r.col.slice(3,5),16)+','+parseInt(r.col.slice(5,7),16);
+    const bar=100*(best-141)/(150-141); // relative bar
+    const fcyLaps=clean.filter(x=>FCY_LAPS.has(x.l));
+    return `<div style="background:rgba(${rgb},.06);border:1px solid rgba(${rgb},.3);border-top:3px solid ${r.col};border-radius:10px;padding:18px">
+      <div style="font-size:.95rem;font-weight:700;color:${r.col};margin-bottom:14px">${r.name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">Best lap</div><div style="font-size:.9rem;font-weight:700;color:#fff">${fmt(best)}</div></div>
+        <div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">Avg (clean)</div><div style="font-size:.9rem;font-weight:700;color:#dde1ee">${fmt(avg)}</div></div>
+        <div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">Clean laps</div><div style="font-size:.9rem;font-weight:700;color:#dde1ee">${vs.length}</div></div>
+        <div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">Consistency</div><div style="font-size:.9rem;font-weight:700;color:#dde1ee">${consistency}</div></div>
+        <div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">Std dev</div><div style="font-size:.9rem;font-weight:700;color:#dde1ee">${sd}s</div></div>
+        ${fcyLaps.length?`<div><div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#8890a4;margin-bottom:3px">FCY laps</div><div style="font-size:.9rem;font-weight:700;color:rgba(255,210,50,0.9)">${fcyLaps.length}</div></div>`:'<div></div>'}
+      </div>
+      <div style="margin-top:14px"><div style="font-size:.62rem;color:#8890a4;margin-bottom:5px;display:flex;justify-content:space-between"><span>Pace bar (best lap)</span><span>${fmt(best)}</span></div><div style="background:#22263a;border-radius:2px;height:5px"><div style="width:${Math.max(3,100-bar)}%;height:5px;border-radius:2px;background:${r.col}"></div></div></div>
+    </div>`;
+  }).join('');
+
+  // ── Rolling average chart ─────────────────────────────────────────────────────
+  function rollingAvg(arr, w){
+    return arr.map((_,i)=>{
+      if(i<w-1) return null;
+      const sl=arr.slice(i-w+1,i+1);
+      return +(sl.reduce((a,b)=>a+b.v,0)/w).toFixed(3);
+    });
+  }
+  const rollLabels=Array.from({length:100},(_,i)=>i+1);
+  function sparseRolling(data, w){
+    const laps=Object.entries(data).map(([l,v])=>({l:+l,v}))
+      .filter(x=>x.v<THRESHOLD&&!PIT38.has(x.l)&&!FCY_LAPS.has(x.l))
+      .sort((a,b)=>a.l-b.l);
+    const ra=rollingAvg(laps,w);
+    const out=new Array(100).fill(null);
+    laps.forEach((x,i)=>{ if(ra[i]!==null&&x.l<=100) out[x.l-1]=ra[i]; });
+    return out;
+  }
+
+}
+
+function buildStints() {
+  window._stints=true;
+  const stints=[
+    {l:'Kovács 1–19',d:19,c:'#4d9de0'},
+    {l:'Cresson 20–37',d:18,c:'#5ab552'},
+    {l:'Bühn 38–58',d:21,c:'#e24b4a'},
+    {l:'Kovács 59–79',d:21,c:'#4d9de0'},
+    {l:'Cresson FCY 80–95',d:16,c:'#9b72cf'},
+    {l:'Bühn 96–100',d:5,c:'#e24b4a'}
+  ];
+  new Chart(document.getElementById('stintChart'),{
+    type:'bar',
+    data:{labels:['Stints'],datasets:stints.map(s=>({label:s.l,data:[s.d],backgroundColor:s.c+'bb',borderColor:s.c,borderWidth:1}))},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}}},scales:{x:{stacked:true,max:100,ticks:{font:{size:10}},title:{display:true,text:'Laps',font:{size:10}}},y:{stacked:true,display:false}}}
+  });
+}
+
+function buildPits() {
+  window._pits=true;
+
+  // Per-team stops in lap order (stop 1 = first pit, stop 5 = last pit)
+  // exact=true means measured; false=estimated
+  const ALL_STOPS = [
+    // #38 Champion-Hert — exact
+    {team:'#38 Champion-Hert', num:38, col:'#ffffff', lap:19,  dur:38.7, exact:true,  note:'Kovács → Cresson'},
+    {team:'#38 Champion-Hert', num:38, col:'#ffffff', lap:58,  dur:39.4, exact:true,  note:'Bühn → Kovács'},
+    {team:'#38 Champion-Hert', num:38, col:'#ffffff', lap:37,  dur:56.4, exact:true,  note:'Cresson → Bühn'},
+    {team:'#38 Champion-Hert', num:38, col:'#ffffff', lap:79,  dur:59.9, exact:true,  note:'Kovács → Cresson'},
+    {team:'#38 Champion-Hert', num:38, col:'#ffffff', lap:95,  dur:62.9, exact:true,  note:'FCY — Cresson → Bühn'},
+    // #77 Wójcik Racing — estimated avg ~49s
+    {team:'#77 Wójcik Racing', num:77, col:'#4F6CBF', lap:20,  dur:42.0, exact:false, note:''},
+    {team:'#77 Wójcik Racing', num:77, col:'#4F6CBF', lap:41,  dur:46.5, exact:false, note:''},
+    {team:'#77 Wójcik Racing', num:77, col:'#4F6CBF', lap:62,  dur:49.0, exact:false, note:''},
+    {team:'#77 Wójcik Racing', num:77, col:'#4F6CBF', lap:83,  dur:51.5, exact:false, note:''},
+    {team:'#77 Wójcik Racing', num:77, col:'#4F6CBF', lap:104, dur:56.0, exact:false, note:''},
+    // #25 Team Étoile — estimated avg ~50s
+    {team:'#25 Team Étoile',   num:25, col:'#F5A623', lap:21,  dur:43.0, exact:false, note:''},
+    {team:'#25 Team Étoile',   num:25, col:'#F5A623', lap:42,  dur:47.5, exact:false, note:''},
+    {team:'#25 Team Étoile',   num:25, col:'#F5A623', lap:63,  dur:50.5, exact:false, note:''},
+    {team:'#25 Team Étoile',   num:25, col:'#F5A623', lap:84,  dur:53.0, exact:false, note:''},
+    {team:'#25 Team Étoile',   num:25, col:'#F5A623', lap:107, dur:56.0, exact:false, note:''},
+    // #49 Revo-M2 Racing — estimated avg ~52s
+    {team:'#49 Revo-M2',       num:49, col:'#9B59B6', lap:22,  dur:45.0, exact:false, note:''},
+    {team:'#49 Revo-M2',       num:49, col:'#9B59B6', lap:43,  dur:50.0, exact:false, note:''},
+    {team:'#49 Revo-M2',       num:49, col:'#9B59B6', lap:65,  dur:52.5, exact:false, note:''},
+    {team:'#49 Revo-M2',       num:49, col:'#9B59B6', lap:86,  dur:55.0, exact:false, note:''},
+    {team:'#49 Revo-M2',       num:49, col:'#9B59B6', lap:109, dur:57.5, exact:false, note:''},
+    // #18 Team 18 — estimated avg ~55s
+    {team:'#18 Team 18',       num:18, col:'#E8503A', lap:19,  dur:48.0, exact:false, note:''},
+    {team:'#18 Team 18',       num:18, col:'#E8503A', lap:40,  dur:53.0, exact:false, note:''},
+    {team:'#18 Team 18',       num:18, col:'#E8503A', lap:61,  dur:55.5, exact:false, note:''},
+    {team:'#18 Team 18',       num:18, col:'#E8503A', lap:82,  dur:59.0, exact:false, note:''},
+    {team:'#18 Team 18',       num:18, col:'#E8503A', lap:103, dur:59.5, exact:false, note:''},
+    // #9 TECMAS MFP — estimated avg ~63s
+    {team:'#9 TECMAS MFP',     num:9,  col:'#92C020', lap:20,  dur:55.0, exact:false, note:''},
+    {team:'#9 TECMAS MFP',     num:9,  col:'#92C020', lap:42,  dur:60.5, exact:false, note:''},
+    {team:'#9 TECMAS MFP',     num:9,  col:'#92C020', lap:64,  dur:63.0, exact:false, note:''},
+    {team:'#9 TECMAS MFP',     num:9,  col:'#92C020', lap:85,  dur:66.5, exact:false, note:''},
+    {team:'#9 TECMAS MFP',     num:9,  col:'#92C020', lap:107, dur:70.0, exact:false, note:''},
+  ];
+
+  // Per-team line datasets — one line per team, X = stop number (chrono order)
+  const PIT_TEAMS = [
+    {key:'#38 Champion-Hert', num:38, col:'#ffffff'},
+    {key:'#77 Wójcik Racing',  num:77, col:'#4F6CBF'},
+    {key:'#25 Team Étoile',    num:25, col:'#F5A623'},
+    {key:'#49 Revo-M2',        num:49, col:'#9B59B6'},
+    {key:'#18 Team 18',        num:18, col:'#E8503A'},
+    {key:'#9 TECMAS MFP',      num:9,  col:'#92C020'},
+  ];
+
+  const xLabels = ['Fastest','2nd','3rd','4th','Slowest'];
+
+  const pitDatasets = PIT_TEAMS.map(team=>{
+    const stops = ALL_STOPS
+      .filter(s=>s.num===team.num)
+      .sort((a,b)=>a.dur-b.dur);
+    return {
+      label: team.key,
+      teamNum: team.num,
+      data: stops.map(s=>s.dur),
+      borderColor: team.col,
+      backgroundColor: team.col+'22',
+      pointBackgroundColor: team.col,
+      pointBorderColor: '#0f1117',
+      pointBorderWidth: 2,
+      pointRadius: 6,
+      pointHoverRadius: 9,
+      borderWidth: 2.5,
+      tension: 0.3,
+      fill: false,
+      _stops: stops,
+    };
+  });
+
+  const pitChart = new Chart(document.getElementById('pitChart'),{
+    type:'line',
+    data:{ labels: xLabels, datasets: pitDatasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            title: items => {
+              const ds = pitDatasets[items[0].datasetIndex];
+              const s = ds._stops[items[0].dataIndex];
+              return ds.label+' — L'+s.lap+(s.exact?'':' (est.)');
+            },
+            label: c => {
+              const ds = pitDatasets[c.datasetIndex];
+              const s = ds._stops[c.dataIndex];
+              return (s.exact?'':'~')+s.dur.toFixed(1)+'s'+(s.note?' — '+s.note:'');
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{color:'rgba(255,255,255,0.04)'},
+          ticks:{font:{size:11}, color:'#8890a4'},
+          title:{display:true, text:'Stop number (chronological)', font:{size:11}, color:'#8890a4'}
+        },
+        y:{
+          grid:{color:'rgba(255,255,255,0.04)'},
+          ticks:{font:{size:11}, color:'#8890a4', callback:v=>v+'s'},
+          title:{display:true, text:'Duration (s)', font:{size:11}, color:'#8890a4'}
+        }
+      }
+    }
+  });
+  window._pitChart = pitChart;
+
+  window.pitToggle = function(num) {
+    const idx = pitDatasets.findIndex(d=>d.teamNum===num);
+    if(idx<0) return;
+    const meta = pitChart.getDatasetMeta(idx);
+    meta.hidden = !meta.hidden;
+    document.getElementById('pt_'+num).classList.toggle('on', !meta.hidden);
+    pitChart.update();
+  };
+
+  // Table
+  const tbody = document.getElementById('pitTableBody');
+  const sortedStops = [...ALL_STOPS].sort((a,b)=>a.dur-b.dur);
+  tbody.innerHTML = sortedStops.map((s,i)=>{
+    const is38 = s.num===38;
+    const rowBg = i%2===0?'':'background:rgba(255,255,255,0.02)';
+    return `<tr style="${rowBg}">
+      <td style="color:var(--text2)">${i+1}</td>
+      <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${s.col};margin-right:6px;vertical-align:middle"></span><span style="${is38?'color:#4d9de0;font-weight:600':''}">${s.team}</span></td>
+      <td style="color:var(--text2)">L${s.lap}</td>
+      <td><strong style="${is38?'color:#4d9de0':''}">${(s.exact?'':'~')+s.dur.toFixed(1)}s</strong></td>
+      <td style="color:var(--text3);font-size:11px">${s.note||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildSST() {
+  window._sst=true;
+  const teams=['#25 Team Étoile','#49 Revo-M2','#9 TECMAS','#77 Wójcik','#18 Team 18','#38 Champion-Hert','#27 TRT27'];
+  const laps=[141.852,141.895,142.318,142.423,142.870,142.933,142.821];
+  const colors=['#5c6178','#5ab552','#5c6178','#5ab552','#5ab552','#4d9de0','#5c6178'];
+  new Chart(document.getElementById('sstChart'),{
+    type:'bar',
+    data:{labels:teams,datasets:[{label:'Best lap (s)',data:laps,backgroundColor:colors,borderWidth:0,borderRadius:3}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},
+      scales:{
+        x:{min:140,max:144,grid:{color:'rgba(255,255,255,0.04)'},ticks:{font:{size:11},callback:v=>{const m=Math.floor(v/60);return m+':'+(v%60<10?'0':'')+Math.round(v%60)}},title:{display:true,text:'Best lap',font:{size:11}}},
+        y:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+function buildChamp() {
+  window._champ=true;
+  // Points: [Season start, R1 Le Mans, R2 Spa, R3 Suzuka, R4 Bol d'Or]
+  const champDs = [
+    {label:'#38 Champion-Hert', data:[0,62,65,null,null], col:'#ffffff', w:3,   dash:[]},
+    {label:'#49 Revo-M2',       data:[0,25,59,null,null], col:'#9B59B6', w:2,   dash:[5,3]},
+    {label:'#77 Wójcik Racing', data:[0,20,44,null,null], col:'#4F6CBF', w:2,   dash:[5,3]},
+    {label:'#18 Team 18',       data:[0,19,40,null,null], col:'#E8503A', w:2,   dash:[5,3]},
+    {label:'#25 Team Étoile',   data:[0,13,33,null,null], col:'#F5A623', w:2,   dash:[5,3]},
+    {label:'#9 TECMAS MFP',     data:[0,28,47,null,null], col:'#92C020', w:2,   dash:[5,3]},
+  ];
+
+  const champChart = new Chart(document.getElementById('champChart'),{
+    type:'line',
+    data:{
+      labels:['Season start','R1 Le Mans','R2 Spa','R3 Suzuka','R4 Bol d\'Or'],
+      datasets: champDs.map(d=>({
+        label:d.label, data:d.data,
+        borderColor:d.col, backgroundColor:d.col+'18',
+        pointBackgroundColor:d.col, pointBorderColor:'#0f1117', pointBorderWidth:2,
+        pointRadius:6, pointHoverRadius:9,
+        borderWidth:d.w, borderDash:d.dash, spanGaps:false, fill:false
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>c.raw!=null?c.dataset.label+': '+c.raw+' pts':null}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'}, ticks:{font:{size:11}, color:'#8890a4'}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'}, min:0, ticks:{font:{size:11}, color:'#8890a4'}, title:{display:true,text:'Points',font:{size:11},color:'#8890a4'}}
+      }
+    },
+    plugins:[{
+      afterDraw(chart){
+        const {ctx,chartArea,scales}=chart;
+        const xPos=scales.x.getPixelForValue(2);
+        ctx.save();
+        ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.moveTo(xPos,chartArea.top); ctx.lineTo(xPos,chartArea.bottom); ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px Segoe UI,sans-serif';
+        ctx.fillText('← past   future →',xPos+4,chartArea.top+12);
+        ctx.restore();
+      }
+    }]
+  });
+  window._champChart = champChart;
+
+  window.champToggle = function(idx) {
+    const meta = champChart.getDatasetMeta(idx);
+    meta.hidden = !meta.hidden;
+    const ids = ['ct_38','ct_49','ct_77','ct_18','ct_25','ct_9'];
+    document.getElementById(ids[idx]).classList.toggle('on', !meta.hidden);
+    champChart.update();
+  };
+}
+// ── LEGEND TOGGLE
+document.addEventListener('click', e => {
+  const el = e.target.closest('.leg-toggle');
+  if (!el) return;
+  const chartKey = el.dataset.chart;
+  const idx = +el.dataset.idx;
+  const chart = window.charts && window.charts[chartKey];
+  if (!chart) return;
+  const meta = chart.getDatasetMeta(idx);
+  meta.hidden = !meta.hidden;
+  el.classList.toggle('active', !meta.hidden);
+  el.classList.toggle('hidden', meta.hidden);
+  chart.update();
+});
+</script>
+</body>
+</html>
