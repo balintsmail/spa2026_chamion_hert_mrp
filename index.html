@@ -679,7 +679,7 @@ setTimeout(() => _applyPaceFilter(0, 8), 0);
     };
   }
   // Auto-detect stints from lap data: consecutive laps with valid times = one stint
-  function rivalStintDs(teamLabel, obj, col) {
+  function rivalStintDs(teamLabel, obj, col, teamNum) {
     const sorted = Object.keys(obj).map(Number).sort((a,b)=>a-b)
       .filter(l => { const v=obj[l]; return v && v < 200 && v > 100 && !FCY.has(l); });
     if (!sorted.length) return [];
@@ -703,7 +703,7 @@ setTimeout(() => _applyPaceFilter(0, 8), 0);
       const isLast = si === stints.length - 1;
       return {
         label: isLast ? teamLabel : '',
-        _fullLabel: teamLabel, _group: teamLabel,
+        _fullLabel: teamLabel, _group: teamLabel, _teamNum: teamNum,
         _stintNum: si+1,
         _avg: a, _lapMin: s.lapMin, _lapMax: s.lapMax,
         data: labels.map(l => (l >= s.lapMin && l <= s.lapMax) ? a : null),
@@ -714,12 +714,12 @@ setTimeout(() => _applyPaceFilter(0, 8), 0);
   }
 
   const datasets = [
-    ...rivalStintDs('#49 Revo-M2', sst49r, '#9B59B6'),
-    ...rivalStintDs('#77 Wójcik',  sst77r, '#4F6CBF'),
-    ...rivalStintDs('#18 Team 18', sst18r, '#E8503A'),
-    ...rivalStintDs('#25 Étoile',  sst25r, '#F5A623'),
-    ...rivalStintDs('#9 TECMAS',   sst9r,  '#92C020'),
-    ...rivalStintDs('#27 TRT27',   sst27r, '#22D3EE'),
+    ...rivalStintDs('#49 Revo-M2', sst49r, '#9B59B6', 49),
+    ...rivalStintDs('#77 Wójcik',  sst77r, '#4F6CBF', 77),
+    ...rivalStintDs('#18 Team 18', sst18r, '#E8503A', 18),
+    ...rivalStintDs('#25 Étoile',  sst25r, '#F5A623', 25),
+    ...rivalStintDs('#9 TECMAS',   sst9r,  '#92C020',  9),
+    ...rivalStintDs('#27 TRT27',   sst27r, '#22D3EE', 27),
     // #38 riders — white, 3px, per-stint
     stintDs('Kovács S1',  kov,  2,  18, '#ffffff', 3, 'Kovács'),
     stintDs('Kovács S2',  kov,  60, 78, '#ffffff', 3, 'Kovács'),
@@ -742,7 +742,18 @@ setTimeout(() => _applyPaceFilter(0, 8), 0);
           mode: 'index', intersect: false,
           callbacks: {
             title: c => 'Lap ' + c[0].label,
-            label: c => c.raw != null ? c.dataset.label + ': ' + fmt(c.raw) : null
+            label: c => {
+              if (c.raw == null) return null;
+              const ds = c.dataset;
+              const lap = +c.label;
+              const teamNum = ds._teamNum;
+              let name = ds._group || ds.label;
+              if (teamNum && teamNum !== 38) {
+                const rider = riderAt(teamNum, lap);
+                if (rider) name += ' (' + rider + ')';
+              }
+              return name + ': ' + fmt(c.raw);
+            }
           },
           filter: item => item.raw != null
         }
