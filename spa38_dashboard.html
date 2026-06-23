@@ -608,16 +608,16 @@ window.charts.pace = new Chart(document.getElementById('paceChart'), {
     labels,
     datasets:[
       // SST rivals — thin, semi-transparent background lines
-      {label:'#49 Revo-M2',data:labels.map(l=>sstLap(sst49r,l)),borderColor:'rgba(155,89,182,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
-      {label:'#77 Wójcik',data:labels.map(l=>sstLap(sst77r,l)),borderColor:'rgba(79,108,191,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
-      {label:'#18 Team 18',data:labels.map(l=>sstLap(sst18r,l)),borderColor:'rgba(232,80,58,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
-      {label:'#25 Étoile',data:labels.map(l=>sstLap(sst25r,l)),borderColor:'rgba(245,166,35,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
-      {label:'#9 TECMAS',data:labels.map(l=>sstLap(sst9r,l)),borderColor:'rgba(146,192,32,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
-      {label:'#27 TRT27',data:labels.map(l=>sstLap(sst27r,l)),borderColor:'rgba(34,211,238,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#49 Revo-M2',_teamNum:49,data:labels.map(l=>sstLap(sst49r,l)),borderColor:'rgba(155,89,182,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#77 Wójcik',_teamNum:77,data:labels.map(l=>sstLap(sst77r,l)),borderColor:'rgba(79,108,191,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#18 Team 18',_teamNum:18,data:labels.map(l=>sstLap(sst18r,l)),borderColor:'rgba(232,80,58,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#25 Étoile',_teamNum:25,data:labels.map(l=>sstLap(sst25r,l)),borderColor:'rgba(245,166,35,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#9 TECMAS',_teamNum:9,data:labels.map(l=>sstLap(sst9r,l)),borderColor:'rgba(146,192,32,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
+      {label:'#27 TRT27',_teamNum:27,data:labels.map(l=>sstLap(sst27r,l)),borderColor:'rgba(34,211,238,0.55)',backgroundColor:'transparent',pointRadius:0,pointHoverRadius:4,spanGaps:false,borderWidth:1.2,borderDash:[3,2],order:10},
       // #38 riders — thick, solid, on top
-      {label:'Kovács (#38)',data:labels.map(l=>kov[l]||null),borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,0.06)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,order:1},
-      {label:'Bühn (#38)',data:labels.map(l=>buhn[l]||null),borderColor:'#e24b4a',backgroundColor:'rgba(226,75,74,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[5,3],order:1},
-      {label:'Cresson (#38)',data:labels.map(l=>cres[l]||null),borderColor:'#5ab552',backgroundColor:'rgba(90,181,82,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[2,2],order:1}
+      {label:'Kovács (#38)',_teamNum:38,data:labels.map(l=>kov[l]||null),borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,0.06)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,order:1},
+      {label:'Bühn (#38)',_teamNum:38,data:labels.map(l=>buhn[l]||null),borderColor:'#e24b4a',backgroundColor:'rgba(226,75,74,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[5,3],order:1},
+      {label:'Cresson (#38)',_teamNum:38,data:labels.map(l=>cres[l]||null),borderColor:'#5ab552',backgroundColor:'rgba(90,181,82,0.08)',pointRadius:2.5,pointHoverRadius:5,spanGaps:false,borderWidth:2.5,borderDash:[2,2],order:1}
     ]
   },
   options:{
@@ -627,7 +627,14 @@ window.charts.pace = new Chart(document.getElementById('paceChart'), {
       legend:{display:false},
       tooltip:{callbacks:{
         title:c=>'Lap '+c[0].label,
-        label:c=>c.raw?c.dataset.label+': '+fmt(c.raw):null
+        label:c=>{
+          if(!c.raw) return null;
+          const lap = +c.label;
+          const ds = c.dataset;
+          const rider = ds._teamNum ? riderAt(ds._teamNum, lap) : null;
+          const suffix = rider ? ' ('+rider+')' : '';
+          return ds.label+suffix+': '+fmt(c.raw);
+        }
       }}
     },
     scales:{
@@ -1037,6 +1044,54 @@ const RIVAL_LABELS = {
   49: '#49 Revo-M2', 77: '#77 Wójcik', 18: '#18 Team 18', 25: '#25 Étoile', 9: '#9 TECMAS', 27: '#27 TRT27',
   41: '#41 Dafy-Kaedear', 'hnl': 'Honda No Limits'
 };
+// Rider stints: [lapMin, lapMax] windows per rider per team (from official XLS)
+const RIDER_STINTS = {
+  38: [
+    {n:'Kovács',  s:[[2,18],[60,78]]},
+    {n:'Cresson', s:[[21,36],[81,94]]},
+    {n:'Bühn',    s:[[39,57],[97,98]]},
+  ],
+  49: [
+    {n:'Calia',      s:[[1,17],[37,55],[95,113],[140,177]]},
+    {n:'Saltarelli', s:[[18,36],[75,94],[114,139],[178,186]]},
+    {n:'Ferroni',    s:[[56,74]]},
+  ],
+  77: [
+    {n:'Torres',    s:[[1,19],[60,78],[117,137],[160,178]]},
+    {n:'Gutierrez', s:[[20,39],[79,116],[138,159],[179,186]]},
+    {n:'Molik',     s:[[40,59]]},
+  ],
+  18: [
+    {n:'Alcoba',     s:[[1,19],[62,78],[115,136],[180,185]]},
+    {n:'Pellizotti', s:[[20,40],[79,93]]},
+    {n:'Guittet',    s:[[41,61],[94,114],[137,179]]},
+  ],
+  25: [
+    {n:'Toba',  s:[[1,13],[78,114],[162,183]]},
+    {n:'Ito',   s:[[14,35],[58,77],[115,138]]},
+    {n:'Okubo', s:[[36,57],[139,161]]},
+  ],
+  9: [
+    {n:'Ponsson', s:[[1,18],[61,78],[160,175]]},
+    {n:'Antiga',  s:[[19,39],[79,114],[176,181]]},
+    {n:'Leesch',  s:[[40,60],[115,159],[182,190]]},
+  ],
+  27: [
+    {n:'Lahti',  s:[[1,19],[61,95],[116,152],[178,192]]},
+    {n:'Ward',   s:[[20,39],[153,177]]},
+    {n:'Oliver', s:[[40,60],[96,115]]},
+  ],
+};
+function riderAt(num, lap) {
+  const t = RIDER_STINTS[num];
+  if (!t) return null;
+  for (const r of t) {
+    for (const [a, b] of r.s) {
+      if (lap >= a && lap <= b) return r.n;
+    }
+  }
+  return null;
+}
 const posData = {38:pos38, 49:pos49, 77:pos77, 18:pos18, 25:pos25, 9:pos9, 27:pos27};
 const cumData = {38:cum38, 49:cum49, 77:cum77, 18:cum18, 25:cum25, 9:cum9, 27:cum27};
 
@@ -1057,9 +1112,9 @@ function buildPosition() {
   }
 
   const datasets = [
-    {label:'#38 Champion-Hert', data: laps100.map(l=>sstRank(38,l)), borderColor:'#ffffff', pointRadius:1.5, pointHoverRadius:5, spanGaps:false, borderWidth:3, order:1},
+    {label:'#38 Champion-Hert', _teamNum:38, data: laps100.map(l=>sstRank(38,l)), borderColor:'#ffffff', pointRadius:1.5, pointHoverRadius:5, spanGaps:false, borderWidth:3, order:1},
     ...([49,77,18,25,9,27].map(n=>({
-      label: RIVAL_LABELS[n], data: laps100.map(l=>sstRank(n,l)),
+      label: RIVAL_LABELS[n], _teamNum:n, data: laps100.map(l=>sstRank(n,l)),
       borderColor: RIVAL_COLORS[n], pointRadius:0, pointHoverRadius:4,
       spanGaps:false, borderWidth:1.5, borderDash:[4,2], order:5
     })))
@@ -1072,7 +1127,16 @@ function buildPosition() {
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{title:c=>'Lap '+c[0].label, label:c=>c.raw?c.dataset.label+': SST P'+c.raw:null}}
+        tooltip:{callbacks:{
+          title:c=>'Lap '+c[0].label,
+          label:c=>{
+            if(!c.raw) return null;
+            const lap = +c.label;
+            const rider = riderAt(c.dataset._teamNum, lap);
+            const suffix = rider ? ' ('+rider+')' : '';
+            return c.dataset.label+suffix+': SST P'+c.raw;
+          }
+        }}
       },
       scales:{
         x:{grid:{color:'rgba(255,255,255,0.04)'}, ticks:{maxTicksLimit:20,font:{size:11}}, title:{display:true,text:'Lap',font:{size:11}}},
@@ -1140,7 +1204,7 @@ function buildGap() {
 
   // gap = cum_rival[l] - cum_38[l] (positive = rival behind #38)
   const datasets = rivals.map(r => ({
-    label: RIVAL_LABELS[r.n],
+    label: RIVAL_LABELS[r.n], _teamNum: r.n,
     data: laps95.map(l => {
       const c38 = cum38[l], cr = r.cum[l];
       return (c38 != null && cr != null) ? +(cr - c38).toFixed(1) : null;
@@ -1162,8 +1226,11 @@ function buildGap() {
           title:c=>'Lap '+c[0].label,
           label:c=>{
             if(c.raw==null) return null;
+            const lap = +c.label;
+            const rider = riderAt(c.dataset._teamNum, lap);
+            const suffix = rider ? ' ('+rider+')' : '';
             const s=Math.abs(c.raw).toFixed(1);
-            return c.dataset.label+': '+(c.raw>=0?'+'+s+'s behind':s+'s ahead');
+            return c.dataset.label+suffix+': '+(c.raw>=0?'+'+s+'s behind':s+'s ahead');
           }
         }}
       },
